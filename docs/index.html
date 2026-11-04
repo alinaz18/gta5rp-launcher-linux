@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GTA5RP Launcher — Linux и Windows</title>
-<meta name="description" content="Неофициальный лаунчер GTA5RP для Linux и Windows: оригинальный интерфейс 5RP, живой фон под сервер, шесть тем и запуск через Proton.">
-<meta property="og:title" content="GTA5RP Launcher — Linux и Windows">
+<title>GTA5RP на Linux — открытый лаунчер</title>
+<meta name="description" content="Официального лаунчера GTA5RP для Linux нет. Этот открытый лаунчер находит GTA V и Proton, ставит RAGE:MP и пускает на сервер 5RP одной кнопкой.">
+<meta property="og:title" content="GTA5RP на Linux — открытый лаунчер">
 <meta property="og:description" content="Играй на GTA5RP с Linux: оригинальный интерфейс, живой фон под сервер, шесть тем, запуск через Proton.">
 <meta property="og:image" content="https://alinaz18.github.io/gta5rp-launcher-linux/shots/servers.webp">
 <meta name="theme-color" content="#08070b">
@@ -128,7 +128,9 @@ h2 { font-family: Unbounded, Inter, sans-serif; font-weight: 700; font-size: cla
 .t-f { grid-column: span 3; } .t-g { grid-column: span 3; }
 .t-f .shot2 { position: absolute; right: -40px; bottom: -40px; width: 62%; aspect-ratio: 1200/770; border-radius: 14px; border: 1px solid var(--line2);
   background: url(shots/settings.webp) right top / cover no-repeat; transform: rotate(-4deg); box-shadow: 0 30px 60px -20px #000; z-index: -1; opacity: .9; }
-.t-g .shot2 { position: absolute; right: -40px; bottom: -40px; width: 62%; aspect-ratio: 1200/770; border-radius: 14px; border: 1px solid var(--line2);
+.t-g .mini { margin: 18px 0 0; padding: 14px 16px; border-radius: 12px; background: #050407; border: 1px solid var(--line); font: 500 12.5px/1.8 "JetBrains Mono", monospace; color: #cfcad8; white-space: pre; overflow: hidden; }
+.t-g .mini span { color: var(--or); } .t-g .mini i { font-style: normal; color: #3ddc84; }
+.t-g .shot2-unused { position: absolute; right: -40px; bottom: -40px; width: 62%; aspect-ratio: 1200/770; border-radius: 14px; border: 1px solid var(--line2);
   background: url(shots/windows.webp) left top / cover no-repeat; transform: rotate(4deg); box-shadow: 0 30px 60px -20px #000; z-index: -1; opacity: .9; }
 .t-f p, .t-g p { max-width: 260px; }
 @media (max-width: 940px) {
@@ -173,14 +175,20 @@ code { font-family: "JetBrains Mono", monospace; font-size: .86em; padding: 2px 
 .tabs button { all: unset; cursor: pointer; padding: 8px 12px; border-radius: 10px; font-size: 13.5px; font-weight: 600; color: var(--muted); }
 .tabs button.on { background: rgba(255,255,255,.1); color: #fff; }
 .pane { display: none; } .pane.on { display: block; }
-.term { position: relative; border-radius: 14px; background: #050407; border: 1px solid var(--line); padding: 16px 70px 16px 16px; overflow-x: auto; }
+.term { position: relative; border-radius: 14px; background: #050407; border: 1px solid var(--line); padding: 42px 16px 16px; overflow-x: auto; }
 .term pre { margin: 0; font: 500 13.5px/1.75 "JetBrains Mono", monospace; color: #e5e1ea; white-space: pre; }
 .term .p { color: var(--or); user-select: none; }
-.copy { all: unset; position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 12px; padding: 5px 9px; border-radius: 8px; background: rgba(255,255,255,.08); color: #ccc; }
+.copy { all: unset; position: absolute; top: 8px; right: 8px; cursor: pointer; font-size: 12px; padding: 5px 9px; border-radius: 8px; background: rgba(255,255,255,.08); color: #ccc; }
 .copy:hover { background: rgba(255,255,255,.15); color: #fff; }
 .note { color: var(--muted); font-size: 14px; margin: 0; }
 .note a { color: var(--or2); }
 .oscard .btn { width: 100%; justify-content: flex-start; }
+.trust { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.trust li { position: relative; padding-left: 26px; color: #c9c4d1; font-size: 14.5px; }
+.trust li::before { content: "✓"; position: absolute; left: 0; top: 0; color: #3ddc84; font-weight: 800; }
+.trust b { color: #fff; }
+.winnote { margin-top: 14px; color: var(--muted); font-size: 14px; }
+.winnote a { color: var(--or2); }
 .req { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
 @media (max-width: 900px) { .req { grid-template-columns: 1fr 1fr; } }
 .req div { padding: 16px; border-radius: 16px; border: 1px solid var(--line); font-size: 14px; color: #cbc6d2; background: rgba(255,255,255,.02); }
@@ -236,20 +244,20 @@ footer b { color: #d9d5df; font-weight: 600; }
     <div>
       <span class="eyebrow rv"><b id="vtag">v1.2</b> Неофициальный · открытый код</span>
       <h1 class="rv">GTA5RP<span class="grad">на Linux.</span></h1>
-      <p class="lead rv">Оригинальный интерфейс 5RP в новом оформлении. Лаунчер сам находит GTA V и Proton, ставит RAGE:MP и пускает на сервер одной кнопкой. Есть версия для Windows.</p>
+      <p class="lead rv">Официального лаунчера GTA5RP для Linux нет. Этот — открытый: сам находит GTA V и Proton, ставит RAGE:MP и пускает на сервер одной кнопкой. Интерфейс — оригинальный, из установщика 5RP.</p>
       <div class="cta rv">
-        <a class="btn white" href="#install">
+        <a class="btn orange" href="#install">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/></svg>
           <span>Скачать для Linux<small id="v1">deb · rpm · Arch · любой дистрибутив</small></span></a>
-        <a class="btn orange" id="dl-win" href="https://github.com/alinaz18/gta5rp-launcher-linux/releases/latest">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5l7.5-1v7H3zM11.5 4.3 21 3v8.5h-9.5zM3 12.5h7.5v7L3 18.5zM11.5 12.5H21V21l-9.5-1.3z"/></svg>
-          <span>Скачать для Windows<small id="v2">установщик · portable</small></span></a>
+        <a class="btn" href="#how">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5m0 3h.01"/></svg>
+          <span>Как это работает<small>и почему это безопасно</small></span></a>
       </div>
       <div class="facts rv">
-        <div><b>6</b>тем с анимацией</div><div><b>2</b>системы: Linux и Windows</div><div><b>1 клик</b>до сервера</div><div><b>MIT</b>открытый код</div>
+        <div><b>6</b>тем с анимацией</div><div><b>Proton</b>через ваш Steam</div><div><b>1 клик</b>до сервера</div><div><b>MIT</b>открытый код</div>
       </div>
     </div>
-    <div class="hero-art rv"><img src="img/tux-5rp.svg" alt="Tux держит карточку GTA5RP" width="600" height="580"></div>
+    <div class="hero-art rv"><img src="img/tux-5rp.svg" alt="Tux с карточкой GTA5RP" width="600" height="580"></div>
   </div>
   <div class="scroll-hint" aria-hidden="true"></div>
 </header>
@@ -304,10 +312,12 @@ footer b { color: #d9d5df; font-weight: 600; }
         <div class="shot2" aria-hidden="true"></div>
       </div>
       <div class="tile t-g rv">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5l7.5-1v7H3zM11.5 4.3 21 3v8.5h-9.5zM3 12.5h7.5v7L3 18.5zM11.5 12.5H21V21l-9.5-1.3z"/></svg></div>
-        <h3>И для Windows</h3>
-        <p>Тот же вид и темы. Официальный лаунчер 5RP скачается и поставится сам.</p>
-        <div class="shot2" aria-hidden="true"></div>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg></div>
+        <h3>Весь код открыт</h3>
+        <p>Каждую версию собирает GitHub из исходников, которые может проверить любой. Пароль уходит только на сервер 5RP.</p>
+        <pre class="mini" aria-hidden="true"><span>$</span> git clone …/gta5rp-launcher-linux
+<i>✓</i> gta5rp_core.py   <i>✓</i> gta5rp_webui.py
+<i>✓</i> CI: install.sh на 6 дистрибутивах</pre>
       </div>
     </div>
   </div>
@@ -357,13 +367,14 @@ footer b { color: #d9d5df; font-weight: 600; }
         </div>
       </div>
       <div class="oscard rv">
-        <header><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5l7.5-1v7H3zM11.5 4.3 21 3v8.5h-9.5zM3 12.5h7.5v7L3 18.5zM11.5 12.5H21V21l-9.5-1.3z"/></svg>Windows 10 / 11</header>
+        <header><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2 4 5v6c0 5 3.4 9.5 8 11 4.6-1.5 8-6 8-11V5l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>Почему можно доверять</header>
         <div class="body">
-          <a class="btn orange asset" data-ext=".exe" href="https://github.com/alinaz18/gta5rp-launcher-linux/releases/latest">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/></svg><span>Установщик<small>GTA5RP-Launcher-Setup.exe</small></span></a>
-          <a class="btn asset" data-ext=".zip" href="https://github.com/alinaz18/gta5rp-launcher-linux/releases/latest">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg><span>Portable-версия<small>распаковать и запустить</small></span></a>
-          <p class="note">Тот же интерфейс, фон и темы. RAGE:MP запускается напрямую. Официальный лаунчер 5RP скачается и поставится автоматически.</p>
+          <ul class="trust">
+            <li><b>Открытый код.</b> Всё, что делает лаунчер, лежит на GitHub — его можно прочитать и собрать самому.</li>
+            <li><b>Пароль не хранится.</b> Вход идёт напрямую на api.gta5rp.com из оригинального окна 5RP; лаунчер помнит только токен сессии, как официальный.</li>
+            <li><b>Сборки делает GitHub.</b> Пакеты в релизах собираются автоматически из исходников, а не на чьём-то компьютере.</li>
+            <li><b>Ничего лишнего.</b> Лаунчер запускает RAGE:MP тем же способом, что официальный, — никаких модов и читов.</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -373,6 +384,7 @@ footer b { color: #d9d5df; font-weight: 600; }
       <div><b>Steam запущен</b>во время игры</div>
       <div><b>~100 МБ</b>интерфейс 5RP при первом запуске</div>
     </div>
+    <p class="winnote rv">Играете на Windows? Пользуйтесь официальным лаунчером с <a href="https://gta5rp.com">gta5rp.com</a>. Сборка этого лаунчера для Windows тоже есть — только ради тем оформления, она лежит в <a href="https://github.com/alinaz18/gta5rp-launcher-linux/releases/latest">релизах</a>.</p>
   </div>
 </section>
 
@@ -380,7 +392,8 @@ footer b { color: #d9d5df; font-weight: 600; }
   <div class="wrap center"><span class="kicker rv">Вопросы</span><h2 class="rv">Частые вопросы</h2></div>
   <div class="wrap faq">
     <details class="rv"><summary>Это официальный лаунчер?</summary><p>Нет. Это независимый проект с открытым кодом, не связанный с GTA5RP, RAGE Multiplayer, Rockstar Games или Valve.</p></details>
-    <details class="rv"><summary>Зачем версия для Windows?</summary><p>Ради оформления: живой фон под сервер, темы и настройки. Внутри — тот же интерфейс 5RP и тот же способ запуска RAGE:MP.</p></details>
+    <details class="rv"><summary>Зачем он, если есть официальный лаунчер?</summary><p>Официальный лаунчер 5RP работает только на Windows. Этот — для тех, кто играет на Linux: он делает то же самое, но через Proton из Steam. На Windows проще пользоваться официальным.</p></details>
+    <details class="rv"><summary>Безопасно ли вводить пароль?</summary><p>Вход происходит в оригинальном окне 5RP и уходит напрямую на api.gta5rp.com — как в официальном лаунчере. Лаунчер сохраняет только токен сессии (его можно сбросить кнопкой «Выйти»). Весь код открыт на GitHub.</p></details>
     <details class="rv"><summary>RAGE:MP спрашивает про новую папку</summary><p>Это обычная проверка RAGE:MP при первом запуске — нажмите «OK». Если на Linux он спросит папку GTA V — выберите диск G:.</p></details>
     <details class="rv"><summary>Меня не забанят?</summary><p>Лаунчер делает то же, что официальный: передаёт адрес сервера и токен в RAGE:MP, античит работает как обычно. Гарантий нет — решения о блокировках принимает администрация 5RP.</p></details>
     <details class="rv"><summary>Тормозят анимации</summary><p>Настройки лаунчера → «Оформление» → анимации «Лёгкие» или «Выкл».</p></details>
@@ -423,7 +436,6 @@ footer b { color: #d9d5df; font-weight: 600; }
     ['home', 'Главная', 'Главная 5RP: новости, видео, «Ваш сервер» с онлайном и индикаторы системы.'],
     ['news', 'Новости', 'Новости 5RP в стеклянном оформлении.'],
     ['settings', 'Настройки', 'Linux-настройки: Proton, папка GTA V, проверка системы, темы.'],
-    ['windows', 'Windows', 'Windows-версия — снято автотестом на настоящей Windows.'],
   ];
   function gallery(screen, cap, items, prefix, seg) {
     screen.innerHTML = items.map(([k, t], i) => `<img src="shots/${prefix}${k}.webp" alt="${t}" ${i ? 'loading="lazy"' : ''}>`).join('');
@@ -504,10 +516,8 @@ footer b { color: #d9d5df; font-weight: 600; }
     if (!j) return;
     const find = (ext) => (j.assets || []).find((a) => a.name.endsWith(ext));
     $$('.asset').forEach((a) => { const f = find(a.dataset.ext); if (f) a.href = f.browser_download_url; });
-    const exe = find('.exe'); if (exe) $('#dl-win').href = exe.browser_download_url;
     $('#vtag').textContent = j.tag_name.replace(/\.0$/, '');
     $('#v1').textContent = `${j.tag_name} · deb · rpm · Arch · любой дистрибутив`;
-    $('#v2').textContent = `${j.tag_name} · установщик · portable`;
   }).catch(() => {});
 })();
 </script>

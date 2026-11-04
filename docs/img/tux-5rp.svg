@@ -484,10 +484,5 @@
       <text x="62" y="95" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="800" letter-spacing="3.5" fill="#ff9a3c">LINUX</text>
       <rect x="4" y="4" width="116" height="58" rx="22" fill="url(#c-gloss)"/>
     </g>
-    <!-- крыло Tux обхватывает правый край карточки -->
-    <g>
-      <path d="M140 -8 C162 -2 170 30 158 58 C148 80 126 98 104 102 C95 103 90 95 97 88 C111 74 123 58 127 36 C129 18 127 0 140 -8 Z" fill="url(#wing)"/>
-      <path d="M148 6 C158 26 154 52 140 72" stroke="#fff" stroke-opacity=".22" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-    </g>
   </g>
 </svg>
