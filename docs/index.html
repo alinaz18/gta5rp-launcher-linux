@@ -57,12 +57,12 @@ a { color: inherit; } img { display: block; max-width: 100%; }
 
 /* ---------------------------------------------------------------- hero */
 .hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: center; isolation: isolate; overflow: hidden; padding: 110px 0 70px; }
-.hero-bg { position: absolute; inset: 0; z-index: -2; background: url(img/hero-flow.webp) center 55% / cover no-repeat;
+.hero-bg { position: absolute; inset: 0; z-index: -2; background: url(img/hero-flow.webp) 60% 55% / cover no-repeat;
   transform: scale(1.06); animation: kb 26s ease-in-out infinite alternate; will-change: transform; }
 @keyframes kb { to { transform: scale(1.14) translate3d(-1.2%, -.8%, 0); } }
 .hero-shade { position: absolute; inset: 0; z-index: -1;
   background:
-    linear-gradient(90deg, rgba(8,7,11,.96) 0%, rgba(8,7,11,.82) 34%, rgba(8,7,11,.35) 62%, rgba(8,7,11,.55) 100%),
+    linear-gradient(90deg, rgba(8,7,11,.9) 0%, rgba(8,7,11,.66) 34%, rgba(8,7,11,.22) 62%, rgba(8,7,11,.45) 100%),
     linear-gradient(180deg, rgba(8,7,11,.55) 0%, rgba(8,7,11,0) 30%, rgba(8,7,11,0) 65%, var(--bg) 100%),
     radial-gradient(60% 50% at 75% 60%, rgba(255,122,47,.18), transparent 70%); }
 .hero .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
@@ -194,10 +194,16 @@ summary::-webkit-details-marker { display: none; }
 summary::after { content: ""; width: 12px; height: 12px; flex: none; margin-top: 6px; border-right: 2px solid var(--or2); border-bottom: 2px solid var(--or2); transform: rotate(45deg); transition: transform .3s; }
 details[open] summary::after { transform: rotate(-135deg); }
 details p { margin: -6px 4px 22px; color: var(--muted); }
-.final { position: relative; margin-top: 140px; padding: 110px 0; text-align: center; isolation: isolate; overflow: hidden; }
-.final::before { content: ""; position: absolute; inset: 0; z-index: -1; background: url(img/final-flow.webp) center 60% / cover no-repeat; opacity: .6; }
-.final::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, var(--bg), rgba(8,7,11,.55) 40%, rgba(8,7,11,.85)); }
-.final .cta { justify-content: center; margin-top: 30px; }
+.final { position: relative; margin-top: 140px; min-height: min(56vw, 760px); display: flex; align-items: center; padding: 110px 0; isolation: isolate; overflow: hidden; }
+.final::before { content: ""; position: absolute; inset: 0; z-index: -1; background: url(img/final-flow.webp) 62% 30% / cover no-repeat; }
+.final::after { content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(90deg, rgba(8,7,11,.9) 0%, rgba(8,7,11,.7) 28%, rgba(8,7,11,.1) 52%, transparent 70%),
+              linear-gradient(180deg, var(--bg) 0%, transparent 16%, transparent 80%, var(--bg) 100%); }
+.final .wrap > * { max-width: 470px; }
+.final h2 { text-shadow: 0 4px 30px rgba(0,0,0,.6); }
+@media (max-width: 760px) { .final { min-height: 0; padding: 340px 0 70px; } .final::before { background-position: 66% 0%; background-size: auto 360px; }
+  .final::after { background: linear-gradient(180deg, transparent 0%, transparent 240px, var(--bg) 360px); } }
+.final .cta { justify-content: flex-start; margin-top: 30px; }
 footer { padding: 40px 0 60px; border-top: 1px solid var(--line); color: var(--dim); font-size: 13px; }
 footer .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 @media (max-width: 760px) { footer .wrap { grid-template-columns: 1fr; } }
@@ -228,7 +234,7 @@ footer b { color: #d9d5df; font-weight: 600; }
   <div class="hero-shade"></div>
   <div class="wrap">
     <div>
-      <span class="eyebrow rv"><b>v1.1</b> Неофициальный · открытый код</span>
+      <span class="eyebrow rv"><b id="vtag">v1.2</b> Неофициальный · открытый код</span>
       <h1 class="rv">GTA5RP<span class="grad">на Linux.</span></h1>
       <p class="lead rv">Оригинальный интерфейс 5RP в новом оформлении. Лаунчер сам находит GTA V и Proton, ставит RAGE:MP и пускает на сервер одной кнопкой. Есть версия для Windows.</p>
       <div class="cta rv">
@@ -384,7 +390,7 @@ footer b { color: #d9d5df; font-weight: 600; }
 <div class="final">
   <div class="wrap">
     <h2 class="rv">Увидимся <span class="grad">на сервере.</span></h2>
-    <p class="sub rv" style="margin:0 auto">Бесплатно, с открытым кодом. Лайк репозиторию — лучшая благодарность.</p>
+    <p class="sub rv">Бесплатно, с открытым кодом. Лайк репозиторию — лучшая благодарность.</p>
     <div class="cta rv">
       <a class="btn white" href="#install">Скачать</a>
       <a class="btn" href="https://github.com/alinaz18/gta5rp-launcher-linux">★ GitHub</a>
@@ -398,7 +404,7 @@ footer b { color: #d9d5df; font-weight: 600; }
   <div><b>Фото и иллюстрации</b> (Wikimedia Commons):<br>
     «Hot Nights Bright Lights…» — Sevan Seviant, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>, обрезано ·
     Tux — Larry Ewing, Simon Budig, Garrett LeSage.<br>
-    Фон первого экрана и арт тем лаунчера сгенерированы в Google Flow (Nano Banana).</div>
+    Фон первого экрана, финальный блок и арт тем лаунчера сгенерированы в Google Flow (Nano Banana, 2K).</div>
 </div></footer>
 
 <script>
@@ -499,6 +505,7 @@ footer b { color: #d9d5df; font-weight: 600; }
     const find = (ext) => (j.assets || []).find((a) => a.name.endsWith(ext));
     $$('.asset').forEach((a) => { const f = find(a.dataset.ext); if (f) a.href = f.browser_download_url; });
     const exe = find('.exe'); if (exe) $('#dl-win').href = exe.browser_download_url;
+    $('#vtag').textContent = j.tag_name.replace(/\.0$/, '');
     $('#v1').textContent = `${j.tag_name} · deb · rpm · Arch · любой дистрибутив`;
     $('#v2').textContent = `${j.tag_name} · установщик · portable`;
   }).catch(() => {});
