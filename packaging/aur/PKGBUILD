@@ -13,7 +13,7 @@ optdepends=('steam: GTA V and Proton'
 provides=('gta5rp-launcher')
 conflicts=('gta5rp-launcher')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('0c16c259bf653a0757a397f5e8661c9e2d8671e3fd97cac5c83f4f5874755a78')
 
 package() {
   cd "$pkgname-$pkgver"
