@@ -69,6 +69,8 @@ install_files() {
     "$SRC_DIR/gta5rp_webui.py" "$APP_DIR/"
   run mkdir -p "$APP_DIR/webui"
   run install -m 644 "$SRC_DIR/webui/enhance.css" "$SRC_DIR/webui/enhance.js" "$APP_DIR/webui/"
+  run mkdir -p "$APP_DIR/webui/themes"
+  run install -m 644 "$SRC_DIR"/webui/themes/*.webp "$APP_DIR/webui/themes/"
   run install -m 644 "$SRC_DIR/data/gta5rp-launcher.svg" "$DATA/icons/hicolor/scalable/apps/"
   local py; py=$(command -v "$PY" || echo "$PY")
   [ -x "$APP_DIR/venv/bin/python" ] && py="$APP_DIR/venv/bin/python"

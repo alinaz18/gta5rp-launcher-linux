@@ -520,3 +520,12 @@ html[data-rp-theme="casino"] #rp-fxdom::before {
 .rp-theme[data-theme="vibe"] { background: repeating-linear-gradient(90deg, rgba(34,229,122,.25) 0 2px, transparent 2px 12px), linear-gradient(135deg, #062b14, #010502); }
 .rp-theme[data-theme="vice"] { background: radial-gradient(circle at 70% 75%, #ffb347 0 14px, #ff2f8f 15px 22px, transparent 23px), linear-gradient(180deg, #2a0b4a, #ff3fa4 140%); }
 .rp-theme[data-theme="casino"] { background: linear-gradient(115deg, transparent 40%, rgba(255,231,161,.4) 50%, transparent 60%), radial-gradient(circle at 75% 25%, #ffe7a1, transparent 55%), linear-gradient(135deg, #5b4310, #0e0a03); }
+
+/* ---------- сгенерированный арт тем (webui/themes/*.webp) */
+html[data-rp-theme] #rp-bg .rp-img.art { filter: brightness(.86) saturate(1.05) !important; background-position: 72% 40%; }
+html[data-rp-theme] #rp-bg .rp-img.art.on { opacity: min(1, calc(var(--rp-strength) + .32)); }
+html[data-rp-theme] #rp-bg .rp-shade {
+  background: linear-gradient(90deg, rgba(5, 5, 8, .88) 0, rgba(5, 5, 8, .55) 26%, rgba(5, 5, 8, .12) 62%, rgba(5, 5, 8, .25) 100%),
+              linear-gradient(180deg, rgba(5, 5, 8, .35) 0, transparent 30%, transparent 70%, rgba(5, 5, 8, .75) 100%);
+}
+html[data-rp-theme] #rp-bg .rp-aurora { opacity: .22; }

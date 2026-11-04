@@ -8,7 +8,7 @@ PREFIX="${2:-/usr}"
 
 install -Dm644 "$SRC/gta5rp_launcher.py"        "$DEST$PREFIX/share/gta5rp-launcher/gta5rp_launcher.py"
 install -Dm644 "$SRC/gta5rp_core.py"            "$DEST$PREFIX/share/gta5rp-launcher/gta5rp_core.py"
-for f in gta5rp_official.py gta5rp_webui.py webui/enhance.css webui/enhance.js; do
+for f in gta5rp_official.py gta5rp_webui.py webui/enhance.css webui/enhance.js $(cd "$SRC" && ls webui/themes/*.webp); do
   install -Dm644 "$SRC/$f" "$DEST$PREFIX/share/gta5rp-launcher/$f"
 done
 install -Dm644 "$SRC/data/gta5rp-launcher.svg"     "$DEST$PREFIX/share/icons/hicolor/scalable/apps/gta5rp-launcher.svg"

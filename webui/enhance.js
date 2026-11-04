@@ -48,8 +48,13 @@
   const [imgA, imgB] = bg.querySelectorAll('.rp-img');
   let front = imgA, current = '', want = '';
 
+  // у тем (кроме оригинальной) свой арт на фоне — webui/themes/<тема>.webp
+  const themeArt = () => (prefs.theme && prefs.theme !== 'original' && window.__rpAssets)
+    ? `${window.__rpAssets}/themes/${prefs.theme}.webp` : '';
+
   function showBg(url) {
-    url = url || DEFAULT_BG;
+    const art = themeArt();
+    url = art || url || DEFAULT_BG;
     want = url;
     if (url === current) return;
     const img = new Image();
@@ -58,6 +63,7 @@
       current = url;
       const back = front === imgA ? imgB : imgA;
       back.style.backgroundImage = `url("${url}")`;
+      back.classList.toggle('art', !!art);
       back.classList.add('on');
       front.classList.remove('on');
       front = back;

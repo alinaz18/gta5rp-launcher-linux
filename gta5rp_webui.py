@@ -425,6 +425,7 @@ SHIM = r"""
   });
   window.__rpTheme = (url) => call('serverTheme', url);
   window.__rp = (name, ...args) => call(name, ...args);
+  window.__rpAssets = "@ASSETS@";
   // окно без рамки: тянем за элементы .draggable (в Electron это -webkit-app-region: drag)
   document.addEventListener('mousedown', (e) => {
     if (e.button !== 0 || !(e.target instanceof Element)) return;
@@ -478,7 +479,7 @@ class WebWindow(QWebEngineView):
         self.channel = QWebChannel(page)
         self.channel.registerObject("bridge", Bridge(self))
         page.setWebChannel(self.channel)
-        shim = SHIM.replace("@CORE@", self.backend.url("core")).replace("@STATUS@", self.backend.url("status"))
+        shim = SHIM.replace("@CORE@", self.backend.url("core")).replace("@STATUS@", self.backend.url("status")).replace("@ASSETS@", QUrl.fromLocalFile(str(EXTRA_DIR)).toString())
         self._add_script(page, "qwebchannel", _qrc_text(":/qtwebchannel/qwebchannel.js"))
         self._add_script(page, "gta5rp-shim", shim)
         for extra in ("enhance.css", "enhance.js"):

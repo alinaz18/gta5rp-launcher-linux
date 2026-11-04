@@ -10,7 +10,7 @@
 <meta property="og:image" content="https://alinaz18.github.io/gta5rp-launcher-linux/shots/servers.webp">
 <meta name="theme-color" content="#08070b">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="preload" as="image" href="img/la-highway.webp">
+<link rel="preload" as="image" href="img/hero-flow.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Unbounded:wght@600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -57,7 +57,7 @@ a { color: inherit; } img { display: block; max-width: 100%; }
 
 /* ---------------------------------------------------------------- hero */
 .hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: center; isolation: isolate; overflow: hidden; padding: 110px 0 70px; }
-.hero-bg { position: absolute; inset: 0; z-index: -2; background: url(img/la-highway.webp) center 42% / cover no-repeat;
+.hero-bg { position: absolute; inset: 0; z-index: -2; background: url(img/hero-flow.webp) center 55% / cover no-repeat;
   transform: scale(1.06); animation: kb 26s ease-in-out infinite alternate; will-change: transform; }
 @keyframes kb { to { transform: scale(1.14) translate3d(-1.2%, -.8%, 0); } }
 .hero-shade { position: absolute; inset: 0; z-index: -1;
@@ -67,6 +67,7 @@ a { color: inherit; } img { display: block; max-width: 100%; }
     radial-gradient(60% 50% at 75% 60%, rgba(255,122,47,.18), transparent 70%); }
 .hero .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
 @media (max-width: 980px) { .hero .wrap { grid-template-columns: 1fr; } .hero-art { max-width: 420px; justify-self: center; order: -1; } }
+@media (max-width: 600px) { .hero { padding-top: 88px; min-height: auto; align-items: flex-start; } .scroll-hint { display: none; } .hero-art { max-width: 210px; margin-bottom: -10px; } h1 { margin-top: 18px; } .facts { gap: 18px; } }
 .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: #e9e5ee;
   padding: 7px 14px 7px 8px; border-radius: 999px; background: rgba(255,255,255,.07); border: 1px solid var(--line2); backdrop-filter: blur(10px); }
 .eyebrow b { font-size: 11px; letter-spacing: .1em; padding: 3px 8px; border-radius: 999px; background: var(--or); color: #170d04; }
@@ -78,7 +79,7 @@ h1 .grad { display: block; }
 .facts div { font-size: 13.5px; color: var(--muted); }
 .facts b { display: block; font-family: Unbounded, Inter, sans-serif; font-size: 22px; color: #fff; font-weight: 700; letter-spacing: -.01em; }
 .hero-art { position: relative; }
-.hero-art img { width: 100%; animation: float 7s ease-in-out infinite; filter: drop-shadow(0 40px 50px rgba(0,0,0,.65)); }
+.hero-art img { width: 100%; height: auto; animation: float 7s ease-in-out infinite; filter: drop-shadow(0 40px 50px rgba(0,0,0,.65)); }
 @keyframes float { 50% { transform: translateY(-12px); } }
 .hero-art::before { content: ""; position: absolute; inset: 14% 8% 6%; border-radius: 50%; z-index: -1;
   background: radial-gradient(circle, rgba(255,122,47,.45), transparent 66%); filter: blur(30px); }
@@ -144,7 +145,7 @@ h2 { font-family: Unbounded, Inter, sans-serif; font-weight: 700; font-size: cla
   transition: border-color .3s, background .3s; }
 .tbtn:hover { background: rgba(255,255,255,.05); }
 .tbtn.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 9%, transparent); }
-.tbtn i { width: 40px; height: 40px; border-radius: 11px; flex: none; background: var(--g); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+.tbtn i { width: 64px; height: 40px; border-radius: 10px; flex: none; background: var(--g); background-size: cover; background-position: 70% 40%; box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
 .tbtn b { display: block; font-size: 15px; } .tbtn small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.35; }
 .tview .frame { --tilt: 0deg; --sc: 1; box-shadow: 0 50px 120px -60px #000, 0 30px 100px -70px var(--c, var(--or)); }
 
@@ -194,7 +195,7 @@ summary::after { content: ""; width: 12px; height: 12px; flex: none; margin-top:
 details[open] summary::after { transform: rotate(-135deg); }
 details p { margin: -6px 4px 22px; color: var(--muted); }
 .final { position: relative; margin-top: 140px; padding: 110px 0; text-align: center; isolation: isolate; overflow: hidden; }
-.final::before { content: ""; position: absolute; inset: 0; z-index: -1; background: url(img/la-skyline.webp) center 70% / cover no-repeat; opacity: .55; }
+.final::before { content: ""; position: absolute; inset: 0; z-index: -1; background: url(img/final-flow.webp) center 60% / cover no-repeat; opacity: .6; }
 .final::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, var(--bg), rgba(8,7,11,.55) 40%, rgba(8,7,11,.85)); }
 .final .cta { justify-content: center; margin-top: 30px; }
 footer { padding: 40px 0 60px; border-top: 1px solid var(--line); color: var(--dim); font-size: 13px; }
@@ -223,7 +224,7 @@ footer b { color: #d9d5df; font-weight: 600; }
 </div></nav>
 
 <header class="hero" id="top">
-  <div class="hero-bg" role="img" aria-label="Ночная трасса в даунтаун Лос-Анджелеса"></div>
+  <div class="hero-bg" role="img" aria-label="Ночной Лос-Сантос с холма"></div>
   <div class="hero-shade"></div>
   <div class="wrap">
     <div>
@@ -395,10 +396,9 @@ footer b { color: #d9d5df; font-weight: 600; }
   <div>GTA5RP Launcher · MIT · <a href="https://github.com/alinaz18/gta5rp-launcher-linux">исходный код</a> · <a href="https://github.com/alinaz18/gta5rp-launcher-linux/issues">сообщить о проблеме</a><br>
     Не связан с GTA5RP, RAGE:MP, Rockstar Games и Valve. Логотип, интерфейс и арт серверов на скриншотах — © GTA5RP.</div>
   <div><b>Фото и иллюстрации</b> (Wikimedia Commons):<br>
-    «Los Angeles and skyline at night» — Ron Reiring, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, затемнено и обрезано ·
     «Hot Nights Bright Lights…» — Sevan Seviant, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>, обрезано ·
-    «Los Angeles Skyline at Night» — BrianLiao, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a> ·
-    Tux — Larry Ewing, Simon Budig, Garrett LeSage.</div>
+    Tux — Larry Ewing, Simon Budig, Garrett LeSage.<br>
+    Фон первого экрана и арт тем лаунчера сгенерированы в Google Flow (Nano Banana).</div>
 </div></footer>
 
 <script>
@@ -465,7 +465,7 @@ footer b { color: #d9d5df; font-weight: 600; }
     ['casino', 'Diamond Casino', 'Золото и золотая пыль.', '#e8b84a', 'linear-gradient(135deg,#fff0bf,#e8b84a 50%,#5b4310)'],
   ];
   const tlist = $('#tlist');
-  tlist.innerHTML = THEMES.map(([k, n, d, c, g], i) => `<button class="tbtn" data-i="${i}" style="--c:${c};--g:${g}"><i></i><span><b>${n}</b><small>${d}</small></span></button>`).join('');
+  tlist.innerHTML = THEMES.map(([k, n, d, c, g], i) => `<button class="tbtn" data-i="${i}" style="--c:${c};--g:${k === 'original' ? g : `url(img/themes/${k}.webp)`}"><i></i><span><b>${n}</b><small>${d}</small></span></button>`).join('');
   const tshow = gallery($('#tscreen'), $('#tcap'), THEMES.map(([k, n, d]) => [k, n, d]), 'themes-');
   const pick = (i) => { tshow(i); $$('.tbtn', tlist).forEach((b, j) => b.classList.toggle('on', i === j)); $('#tframe').style.setProperty('--c', THEMES[i][3]); };
   tlist.addEventListener('click', (e) => { const b = e.target.closest('.tbtn'); if (b) pick(+b.dataset.i); });

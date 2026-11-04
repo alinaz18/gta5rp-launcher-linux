@@ -27,7 +27,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 IS_WIN = os.name == "nt"
 OFFICIAL_VERSION = "1.0.0.11"  # версия официального лаунчера, с которой сверялся протокол
 
