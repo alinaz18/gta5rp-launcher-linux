@@ -366,3 +366,157 @@ html.rp-still #rp-bg .rp-grain { display: none; }
   transform: translateY(-2px); box-shadow: 0 18px 36px -14px rgba(255, 122, 47, 1);
 }
 #root .draggable_lock button:not(.group):not(.bg-brightOrange).border { border-radius: 10px; }
+
+/* ================================================================ ТЕМЫ */
+#rp-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+#rp-fxdom { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+html[data-rp-theme] [class*="text-brightOrange"] { color: var(--rp-orange) !important; }
+html[data-rp-theme] .border-brightOrange { border-color: color-mix(in srgb, var(--rp-orange) 55%, transparent) !important; }
+html[data-rp-theme] #root nav a.bg-brightOrange { box-shadow: 0 10px 28px -10px var(--rp-orange), inset 0 1px 0 rgba(255,255,255,.35); }
+html[data-rp-theme] #root button.group.border-brightOrange:has(img[src*="/sidback/"]) { box-shadow: 0 16px 44px -22px var(--rp-orange); }
+html[data-rp-theme] #root .sticky.bottom-0 > span.bg-brightOrange { box-shadow: 0 0 18px var(--rp-orange); }
+
+/* ---------- zxc / dead inside */
+html[data-rp-theme="zxc"] { --rp-orange: #e10a32; --rp-orange-2: #ff3355; --rp-c: #c4002a; }
+html[data-rp-theme="zxc"] #rp-bg .rp-img { filter: grayscale(1) contrast(1.35) brightness(.5); }
+html[data-rp-theme="zxc"] #rp-bg .rp-aurora { opacity: .35; }
+html[data-rp-theme="zxc"] #root button.group img[src*="/sidback/"] { filter: grayscale(1) contrast(1.3) !important; }
+html[data-rp-theme="zxc"] #root button.group:hover img[src*="/sidback/"] { filter: grayscale(.2) contrast(1.2) !important; }
+html[data-rp-theme="zxc"] #root nav a.bg-brightOrange, html[data-rp-theme="zxc"] .rp-btn.primary { color: #fff !important; }
+html[data-rp-theme="zxc"] #root nav a.bg-brightOrange * { color: #fff !important; }
+html[data-rp-theme="zxc"] #root h2.font-secondary {
+  background: none; color: #f2f2f2 !important; -webkit-text-fill-color: #f2f2f2;
+  text-shadow: 2px 0 rgba(225, 10, 50, .85), -2px 0 rgba(0, 220, 255, .35); animation: none;
+}
+html.rp-glitch[data-rp-theme="zxc"] #root h2.font-secondary,
+html.rp-glitch[data-rp-theme="zxc"] .rp-name { animation: rp-glitch .32s steps(2) both !important; }
+@keyframes rp-glitch {
+  0% { transform: translate(0); clip-path: inset(0 0 0 0); }
+  25% { transform: translate(-4px, 1px); clip-path: inset(10% 0 55% 0); text-shadow: 4px 0 #e10a32, -4px 0 #00e1ff; }
+  50% { transform: translate(3px, -1px); clip-path: inset(60% 0 8% 0); }
+  75% { transform: translate(-2px, 0); clip-path: inset(30% 0 35% 0); text-shadow: -3px 0 #e10a32, 3px 0 #00e1ff; }
+  100% { transform: translate(0); clip-path: inset(0 0 0 0); }
+}
+html[data-rp-theme="zxc"] #rp-fxdom::after {
+  content: ""; position: absolute; inset: 0; opacity: .14; mix-blend-mode: overlay;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,.5) 0 1px, transparent 1px 3px);
+}
+
+/* ---------- Барби */
+html[data-rp-theme="barbie"] { --rp-orange: #ff2d9b; --rp-orange-2: #ff8fd0; --rp-c: #ff4fb4; --rp-line: rgba(255, 180, 225, .16); }
+html[data-rp-theme="barbie"] body, html[data-rp-theme="barbie"] #rp-bg { background: #1a0812 !important; }
+html[data-rp-theme="barbie"] #rp-bg .rp-img { filter: sepia(.6) hue-rotate(285deg) saturate(2.2) brightness(.62); }
+html[data-rp-theme="barbie"] #rp-bg .rp-shade {
+  background: linear-gradient(90deg, rgba(40, 6, 26, .85), rgba(40, 6, 26, .3) 35%, rgba(60, 10, 40, .25) 70%, rgba(40, 6, 26, .5)),
+              linear-gradient(180deg, transparent 40%, rgba(40, 6, 26, .85));
+}
+html[data-rp-theme="barbie"] #root > .draggable > div:first-child { background: linear-gradient(180deg, rgba(60, 12, 40, .72), rgba(36, 8, 26, .66)) !important; }
+html[data-rp-theme="barbie"] #root button.group:has(img[src*="/sidback/"]),
+html[data-rp-theme="barbie"] .rp-card, html[data-rp-theme="barbie"] .rp-btn { border-radius: 22px; }
+html[data-rp-theme="barbie"] #root nav a { border-radius: 999px; }
+html[data-rp-theme="barbie"] #root button.group img[src*="/sidback/"] { filter: sepia(.5) hue-rotate(290deg) saturate(1.8) !important; }
+html[data-rp-theme="barbie"] #root h2.font-secondary {
+  background: linear-gradient(90deg, #fff 0%, #ff9fd6 30%, #ff2d9b 55%, #fff 80%); background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0 10px rgba(255, 45, 155, .55));
+}
+html[data-rp-theme="barbie"] #root nav a.bg-brightOrange { color: #fff !important; }
+html[data-rp-theme="barbie"] #root nav a.bg-brightOrange * { color: #fff !important; }
+
+/* ---------- вайб-кодер */
+html[data-rp-theme="vibe"] { --rp-orange: #22e57a; --rp-orange-2: #7dffb3; --rp-c: #19c96a; --rp-line: rgba(80, 255, 160, .14); }
+html[data-rp-theme="vibe"] body, html[data-rp-theme="vibe"] #rp-bg { background: #020704 !important; }
+html[data-rp-theme="vibe"] #rp-bg .rp-img { filter: grayscale(1) brightness(.35) contrast(1.2); }
+html[data-rp-theme="vibe"] #rp-bg .rp-aurora { opacity: .25; }
+html[data-rp-theme="vibe"] #root, html[data-rp-theme="vibe"] #rp-side, html[data-rp-theme="vibe"] #rp-drawer {
+  font-family: "JetBrains Mono", "Fira Code", "DejaVu Sans Mono", ui-monospace, monospace !important;
+}
+html[data-rp-theme="vibe"] #root * { font-family: inherit !important; }
+html[data-rp-theme="vibe"] #root > .draggable > div:first-child { background: rgba(2, 12, 6, .82) !important; }
+html[data-rp-theme="vibe"] #root button.group:has(img[src*="/sidback/"]),
+html[data-rp-theme="vibe"] .rp-card, html[data-rp-theme="vibe"] .rp-btn, html[data-rp-theme="vibe"] #root nav a { border-radius: 4px; }
+html[data-rp-theme="vibe"] #root button.group img[src*="/sidback/"] { filter: grayscale(1) sepia(1) hue-rotate(80deg) saturate(2.5) brightness(.8) !important; }
+html[data-rp-theme="vibe"] #root nav a.bg-brightOrange { color: #021006 !important; }
+html[data-rp-theme="vibe"] #root h2.font-secondary {
+  background: none; color: #5dff9e !important; -webkit-text-fill-color: #5dff9e; animation: none;
+  text-shadow: 0 0 12px rgba(40, 255, 130, .6);
+}
+html[data-rp-theme="vibe"] #root h2.font-secondary::before { content: "> "; opacity: .7; }
+html[data-rp-theme="vibe"] #root h2.font-secondary::after { content: "_"; margin-left: 4px; animation: rp-blink 1s steps(1) infinite; }
+@keyframes rp-blink { 50% { opacity: 0; } }
+html[data-rp-theme="vibe"] #rp-fxdom::after {
+  content: ""; position: absolute; inset: 0; opacity: .5;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .35) 0 1px, transparent 1px 3px);
+  animation: rp-crt 8s linear infinite;
+}
+@keyframes rp-crt { to { background-position: 0 300px; } }
+
+/* ---------- Vice City */
+html[data-rp-theme="vice"] { --rp-orange: #ff3fa4; --rp-orange-2: #36e2ff; --rp-c: #b54dff; }
+html[data-rp-theme="vice"] body, html[data-rp-theme="vice"] #rp-bg { background: #0c0420 !important; }
+html[data-rp-theme="vice"] #rp-bg .rp-img { filter: saturate(1.5) hue-rotate(-25deg) brightness(.42); }
+html[data-rp-theme="vice"] #root h2.font-secondary {
+  background: linear-gradient(180deg, #fff 20%, #ffb8e6 50%, #ff3fa4 51%, #36e2ff 100%);
+  -webkit-background-clip: text; background-clip: text; animation: none;
+  filter: drop-shadow(0 0 8px rgba(255, 63, 164, .6));
+}
+html[data-rp-theme="vice"] #root nav a.bg-brightOrange { color: #12041e !important; }
+.rp-vice-sun {
+  position: absolute; right: 8%; bottom: 23%; width: 260px; height: 260px; border-radius: 50%; opacity: .55;
+  background: linear-gradient(180deg, #ffe36e 0%, #ff8a3d 45%, #ff2f8f 100%);
+  -webkit-mask: repeating-linear-gradient(180deg, #000 0 14px, transparent 14px 20px) bottom / 100% 55% no-repeat,
+                linear-gradient(#000, #000) top / 100% 45% no-repeat;
+  filter: drop-shadow(0 0 40px rgba(255, 63, 164, .8));
+  animation: rp-sun 6s ease-in-out infinite alternate;
+}
+@keyframes rp-sun { to { transform: translateY(-8px); filter: drop-shadow(0 0 60px rgba(255, 63, 164, 1)); } }
+.rp-vice-grid {
+  position: absolute; left: -50%; right: -50%; bottom: -10%; height: 46%; opacity: .55;
+  background:
+    linear-gradient(90deg, rgba(54, 226, 255, .55) 1px, transparent 1px) 0 0 / 60px 60px,
+    linear-gradient(0deg, rgba(255, 63, 164, .6) 1px, transparent 1px) 0 0 / 60px 60px;
+  transform: perspective(300px) rotateX(62deg); transform-origin: 50% 0;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 35%);
+  animation: rp-grid 1.6s linear infinite;
+}
+@keyframes rp-grid { to { background-position: 0 60px, 0 60px; } }
+.rp-vice-palm { position: absolute; bottom: 20%; width: 150px; height: 230px; opacity: .85; filter: drop-shadow(0 0 12px rgba(181, 77, 255, .5)); }
+.rp-vice-palm.l { right: 30%; transform: scaleX(-1); }
+.rp-vice-palm.r { right: 2%; height: 280px; width: 180px; }
+.rp-vice-palm path { fill: #12041e; }
+
+/* ---------- Diamond Casino */
+html[data-rp-theme="casino"] { --rp-orange: #e8b84a; --rp-orange-2: #ffe7a1; --rp-c: #d4a237; --rp-line: rgba(255, 220, 140, .14); }
+html[data-rp-theme="casino"] body, html[data-rp-theme="casino"] #rp-bg { background: #0a0804 !important; }
+html[data-rp-theme="casino"] #rp-bg .rp-img { filter: sepia(.85) saturate(1.4) brightness(.5); }
+html[data-rp-theme="casino"] #root button.group img[src*="/sidback/"] { filter: sepia(.6) saturate(1.3) !important; }
+html[data-rp-theme="casino"] #root h2.font-secondary {
+  background: linear-gradient(100deg, #8a6a22 0%, #ffe7a1 25%, #c99a35 45%, #fff3c9 60%, #a8801f 80%);
+  background-size: 200% 100%; -webkit-background-clip: text; background-clip: text;
+  filter: drop-shadow(0 2px 8px rgba(232, 184, 74, .45));
+}
+html[data-rp-theme="casino"] #root nav a.bg-brightOrange { color: #1d1505 !important; }
+html[data-rp-theme="casino"] #root button.group:has(img[src*="/sidback/"]) { border-color: rgba(232, 184, 74, .25) !important; }
+html[data-rp-theme="casino"] #rp-fxdom::before {
+  content: ""; position: absolute; inset: -50%; opacity: .5;
+  background: linear-gradient(115deg, transparent 45%, rgba(255, 231, 161, .14) 50%, transparent 55%);
+  animation: rp-sweep 7s ease-in-out infinite;
+}
+@keyframes rp-sweep { from { transform: translateX(-40%); } to { transform: translateX(40%); } }
+
+/* ---------- выбор темы в настройках */
+.rp-themes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+.rp-theme {
+  all: unset; box-sizing: border-box; cursor: pointer; height: 74px; border-radius: 14px; position: relative; overflow: hidden;
+  border: 1px solid var(--rp-line); padding: 8px 10px; display: flex; align-items: flex-end;
+  font-size: 12px; font-weight: 700; color: #fff; text-shadow: 0 1px 6px rgba(0, 0, 0, .8);
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1), box-shadow .3s, border-color .3s;
+}
+.rp-theme:hover { transform: translateY(-2px); }
+.rp-theme.on { border-color: var(--rp-orange); box-shadow: 0 0 0 2px var(--rp-orange), 0 10px 26px -12px var(--rp-orange); }
+.rp-theme i { position: absolute; top: 7px; right: 9px; font-style: normal; font-size: 16px; }
+.rp-theme[data-theme="original"] { background: radial-gradient(circle at 80% 10%, #ff7a2f, transparent 60%), linear-gradient(135deg, #2a2d36, #0f1014); }
+.rp-theme[data-theme="zxc"] { background: repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, transparent 1px 3px), radial-gradient(circle at 75% 20%, #e10a32, transparent 55%), linear-gradient(135deg, #2b2b2b, #050505); }
+.rp-theme[data-theme="barbie"] { background: radial-gradient(circle at 80% 15%, #fff 0 2px, transparent 3px), radial-gradient(circle at 30% 30%, #ff8fd0, transparent 60%), linear-gradient(135deg, #ff2d9b, #7a0f4c); }
+.rp-theme[data-theme="vibe"] { background: repeating-linear-gradient(90deg, rgba(34,229,122,.25) 0 2px, transparent 2px 12px), linear-gradient(135deg, #062b14, #010502); }
+.rp-theme[data-theme="vice"] { background: radial-gradient(circle at 70% 75%, #ffb347 0 14px, #ff2f8f 15px 22px, transparent 23px), linear-gradient(180deg, #2a0b4a, #ff3fa4 140%); }
+.rp-theme[data-theme="casino"] { background: linear-gradient(115deg, transparent 40%, rgba(255,231,161,.4) 50%, transparent 60%), radial-gradient(circle at 75% 25%, #ffe7a1, transparent 55%), linear-gradient(135deg, #5b4310, #0e0a03); }

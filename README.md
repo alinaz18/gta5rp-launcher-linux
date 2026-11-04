@@ -2,10 +2,28 @@
 
 **Русский** · [English](README.en.md) · [Сайт](https://alinaz18.github.io/gta5rp-launcher-linux/)
 
-Неофициальный лаунчер [GTA5RP](https://gta5rp.com) для Linux. Интерфейс — оригинальный,
-из официального установщика 5RP, но с новым оформлением; вместо защищённого
-Windows-ядра работает собственное ядро на Python, а RAGE:MP и GTA V запускаются через
-Proton из Steam.
+Неофициальный лаунчер [GTA5RP](https://gta5rp.com) для **Linux и Windows**. Интерфейс —
+оригинальный, из официального установщика 5RP, но с новым оформлением и шестью темами;
+вместо защищённого Windows-ядра работает собственное ядро на Python. На Linux RAGE:MP и
+GTA V запускаются через Proton из Steam, на Windows — напрямую.
+
+![Сервера](docs/shots/servers.webp)
+
+| Главная | Linux-настройки |
+|---|---|
+| ![Главная](docs/shots/home.webp) | ![Настройки](docs/shots/settings.webp) |
+
+## Темы
+
+| Оригинальная | zxc · dead inside | Барби |
+|---|---|---|
+| ![original](docs/shots/themes-original.webp) | ![zxc](docs/shots/themes-zxc.webp) | ![barbie](docs/shots/themes-barbie.webp) |
+| **Вайб-кодер** | **Vice City** | **Diamond Casino** |
+| ![vibe](docs/shots/themes-vibe.webp) | ![vice](docs/shots/themes-vice.webp) | ![casino](docs/shots/themes-casino.webp) |
+
+Каждая тема со своей анимацией: лепестки ликориса, «1000−7» и глитч у zxc, блёстки и
+сердечки у Барби, матричный дождь у вайб-кодера, неоновый закат с сеткой и пальмами у
+Vice City, золотая пыль у Diamond Casino.
 
 ## Возможности
 
@@ -19,7 +37,10 @@ Proton из Steam.
   античит / RAGE:MP.
 - **Linux-настройки** — выбор Proton, папка GTA V, сворачивание после запуска, подробный
   лог Proton, проверка системы, установка EasyAntiCheat Runtime, аварийное закрытие игры.
-- **Простой интерфейс на Qt** — если официального установщика нет (`gta5rp-launcher --classic`).
+- **Шесть тем с анимацией** — переключаются в настройках одним кликом.
+- **Версия для Windows** — тот же интерфейс, фон и темы; RAGE:MP запускается напрямую.
+- **Официальный установщик скачивается сам**, если его нет в «Загрузках».
+- **Простой интерфейс на Qt** — запасной вариант для Linux (`gta5rp-launcher --classic`).
 
 ## Требования
 
@@ -27,8 +48,8 @@ Proton из Steam.
 - Steam должен быть запущен во время игры;
 - **Proton EasyAntiCheat Runtime** — RAGE:MP использует EasyAntiCheat
   (лаунчер сам предложит поставить);
-- официальный установщик `launcher_setup_*.exe` с [gta5rp.com](https://gta5rp.com) в
-  папке «Загрузки» — из него берётся оригинальный интерфейс;
+- интернет при первом запуске: лаунчер возьмёт официальный установщик из «Загрузок» или
+  скачает его с files.gta5rp.com — из него берётся оригинальный интерфейс;
 - Python 3.9+, PySide6 с QtWebEngine, Wine (только для распаковки установщика).
 
 ## Установка
@@ -48,6 +69,15 @@ cd gta5rp-launcher-linux
 
 Удаление — `./uninstall.sh`.
 
+### Windows
+
+Скачайте `GTA5RP-Launcher-Setup-*.exe` (или portable-архив) из
+[последнего релиза](https://github.com/alinaz18/gta5rp-launcher-linux/releases/latest) и запустите.
+Официальный лаунчер 5RP скачается и установится сам — из него берётся интерфейс.
+
+![Windows](docs/shots/windows.webp)
+*Снято автотестом на настоящей Windows в GitHub Actions.*
+
 ## Как это работает
 
 Официальный лаунчер состоит из интерфейса на Electron и защищённого ядра
@@ -60,8 +90,8 @@ cd gta5rp-launcher-linux
    `HKCU\Software\RAGE-MP` (`launch2.*`) и запускает updater через Proton в префиксе
    GTA V из Steam.
 
-Файлы интерфейса GTA5RP не входят в репозиторий — они берутся только из установщика,
-который вы скачали сами. Ежедневный [watchdog](.github/workflows/watchdog.yml) проверяет,
+Файлы интерфейса GTA5RP не входят в репозиторий — они берутся только из официального
+установщика. Логотип, арты серверов и интерфейс на скриншотах — © GTA5RP. Ежедневный [watchdog](.github/workflows/watchdog.yml) проверяет,
 что API 5RP и зеркала RAGE:MP отвечают как ожидается, и открывает issue, если что-то
 изменилось.
 

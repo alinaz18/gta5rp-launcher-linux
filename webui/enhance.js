@@ -18,7 +18,11 @@
   const sidOf = (u) => { const m = /sidback\/(\d+)\.png/.exec(u || ''); return m ? +m[1] : 0; };
 
   // ------------------------------------------------------------ настройки оформления
-  const prefs = Object.assign({ bg: true, strength: 0.55, spot: true, tilt: true, motion: 'full' },
+  const THEMES = [
+    ['original', 'Оригинальная', '🟠'], ['zxc', 'zxc · dead inside', '🥀'], ['barbie', 'Барби', '💖'],
+    ['vibe', 'Вайб-кодер', '⌨️'], ['vice', 'Vice City', '🌴'], ['casino', 'Diamond Casino', '💎'],
+  ];
+  const prefs = Object.assign({ bg: true, strength: 0.55, spot: true, tilt: true, motion: 'full', theme: 'original' },
     (() => { try { return JSON.parse(ls.get(K_PREFS, '{}')); } catch { return {}; } })());
   function applyPrefs() {
     const h = document.documentElement;
@@ -27,8 +31,10 @@
     h.classList.toggle('rp-lite', prefs.motion === 'lite');
     h.classList.toggle('rp-still', prefs.motion === 'off');
     h.style.setProperty('--rp-strength', String(prefs.strength));
+    if (prefs.theme && prefs.theme !== 'original') h.dataset.rpTheme = prefs.theme; else delete h.dataset.rpTheme;
     ls.set(K_PREFS, JSON.stringify(prefs));
   }
+  const serverTint = () => !prefs.theme || prefs.theme === 'original';
   applyPrefs();
 
   // ------------------------------------------------------------ фон
@@ -36,6 +42,7 @@
   bg.id = 'rp-bg';
   bg.innerHTML = '<div class="rp-img"></div><div class="rp-img"></div>' +
     '<div class="rp-aurora"><i></i><i></i><i></i></div><div class="rp-shade"></div>' +
+    '<div id="rp-fxdom"></div><canvas id="rp-fx"></canvas>' +
     '<div class="rp-spot"></div><div class="rp-grain"></div>';
   document.body.prepend(bg);
   const [imgA, imgB] = bg.querySelectorAll('.rp-img');
@@ -56,8 +63,10 @@
       front = back;
     };
     img.src = url;
-    if (isServerBg(url) && window.__rpTheme) {
-      window.__rpTheme(url).then((c) => { if (want === url && c) document.documentElement.style.setProperty('--rp-c', c); });
+    if (!serverTint()) {
+      document.documentElement.style.removeProperty('--rp-c');
+    } else if (isServerBg(url) && window.__rpTheme) {
+      window.__rpTheme(url).then((c) => { if (want === url && c && serverTint()) document.documentElement.style.setProperty('--rp-c', c); });
     } else if (!isServerBg(url)) {
       document.documentElement.style.setProperty('--rp-c', '#ff7a2f');
     }
@@ -74,6 +83,183 @@
       document.documentElement.style.setProperty('--my', my + 'px');
     });
   }, { passive: true });
+
+
+  // ------------------------------------------------------------ анимации тем (canvas)
+  const cv = bg.querySelector('#rp-fx'), cx = cv.getContext('2d'), fxdom = bg.querySelector('#rp-fxdom');
+  let fxRaf = 0, fxTimers = [], W = 0, H = 0, last = 0;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  function fitCanvas() {
+    const d = Math.min(window.devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight; cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0);
+  }
+  addEventListener('resize', fitCanvas);
+  fitCanvas();
+  const lite = () => prefs.motion === 'lite';
+  const many = (n) => Math.round(lite() ? n * 0.45 : n);
+
+  const PALM = '<svg viewBox="0 0 100 160" class="rp-vice-palm %C"><path d="M52 160c-3-40-2-80 2-112l4 1c-3 31-4 70-1 111z"/>' +
+    '<path d="M55 50C40 30 18 28 2 40c18-4 34 0 50 12zM56 49c4-22 20-36 40-38-14 8-26 20-34 40zM55 52c18-12 38-10 45 4-14-6-28-6-43 0zM54 51C46 36 30 24 10 22c16 8 30 18 40 32zM56 50c-6-18-2-36 10-48-6 16-6 32-6 48z"/></svg>';
+
+  const FX = {
+    zxc: {
+      init() {
+        this.p = Array.from({ length: many(28) }, () => this.petal(true));
+        this.nums = []; this.n = 1000;
+        fxTimers.push(setInterval(() => {
+          this.nums.push({ x: W * rnd(0.55, 0.8), y: H * rnd(0.55, 0.95), a: 1, t: `${this.n} − 7 = ${this.n - 7}` });
+          this.n = this.n - 7 < 7 ? 1000 : this.n - 7;
+        }, lite() ? 1600 : 850));
+        const glitch = () => {
+          document.documentElement.classList.add('rp-glitch');
+          setTimeout(() => document.documentElement.classList.remove('rp-glitch'), 340);
+          fxTimers.push(setTimeout(glitch, rnd(2600, 6500)));
+        };
+        fxTimers.push(setTimeout(glitch, 1800));
+      },
+      petal(start) {
+        return { x: rnd(0, W), y: start ? rnd(-H, H) : rnd(-80, -20), vy: rnd(18, 42), vx: rnd(-8, 8), r: rnd(0, 6.3),
+                 vr: rnd(-1.2, 1.2), s: rnd(7, 15), ph: rnd(0, 6.3) };
+      },
+      frame(dt, t) {
+        cx.clearRect(0, 0, W, H);
+        for (const p of this.p) {
+          p.y += p.vy * dt; p.x += (p.vx + Math.sin(t / 900 + p.ph) * 14) * dt; p.r += p.vr * dt;
+          if (p.y > H + 30) Object.assign(p, this.petal(false));
+          cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r);
+          const g = cx.createLinearGradient(0, -p.s, 0, p.s);
+          g.addColorStop(0, 'rgba(255,60,80,.95)'); g.addColorStop(1, 'rgba(120,0,20,.85)');
+          cx.fillStyle = g; cx.beginPath();
+          cx.moveTo(0, -p.s); cx.quadraticCurveTo(p.s * 0.55, -p.s * 0.2, 0, p.s);
+          cx.quadraticCurveTo(-p.s * 0.25, 0, 0, -p.s); cx.fill(); cx.restore();
+        }
+        cx.font = '600 14px "JetBrains Mono", "DejaVu Sans Mono", monospace';
+        this.nums = this.nums.filter((n) => n.a > 0);
+        for (const n of this.nums) {
+          n.y -= 16 * dt; n.a -= 0.16 * dt;
+          cx.fillStyle = `rgba(235,235,235,${Math.max(0, n.a) * 0.55})`;
+          cx.fillText(n.t, n.x, n.y);
+        }
+      },
+    },
+    barbie: {
+      init() {
+        this.s = Array.from({ length: many(70) }, () => ({ x: rnd(0, W), y: rnd(0, H), z: rnd(2, 6), ph: rnd(0, 6.3), sp: rnd(1.5, 4) }));
+        this.h = Array.from({ length: many(16) }, () => this.heart(true));
+      },
+      heart(start) { return { x: rnd(W * 0.2, W), y: start ? rnd(0, H) : H + 30, v: rnd(16, 38), s: rnd(8, 18), ph: rnd(0, 6.3) }; },
+      frame(dt, t) {
+        cx.clearRect(0, 0, W, H);
+        for (const s of this.s) {
+          const a = Math.max(0, Math.sin(t / 1000 * s.sp + s.ph));
+          if (a < 0.05) continue;
+          const r = s.z * a;
+          cx.fillStyle = `rgba(255,${200 + 55 * a | 0},240,${a})`;
+          cx.beginPath(); cx.moveTo(s.x, s.y - r * 2); cx.quadraticCurveTo(s.x, s.y, s.x + r * 2, s.y);
+          cx.quadraticCurveTo(s.x, s.y, s.x, s.y + r * 2); cx.quadraticCurveTo(s.x, s.y, s.x - r * 2, s.y);
+          cx.quadraticCurveTo(s.x, s.y, s.x, s.y - r * 2); cx.fill();
+        }
+        for (const h of this.h) {
+          h.y -= h.v * dt; const x = h.x + Math.sin(t / 700 + h.ph) * 12;
+          if (h.y < -30) Object.assign(h, this.heart(false));
+          const a = Math.min(1, h.y / H + 0.15) * 0.7, s = h.s;
+          cx.fillStyle = `rgba(255,70,170,${a})`; cx.beginPath();
+          cx.moveTo(x, h.y + s * 0.3);
+          cx.bezierCurveTo(x, h.y - s * 0.3, x - s, h.y - s * 0.3, x - s, h.y + s * 0.15);
+          cx.bezierCurveTo(x - s, h.y + s * 0.6, x, h.y + s * 0.85, x, h.y + s);
+          cx.bezierCurveTo(x, h.y + s * 0.85, x + s, h.y + s * 0.6, x + s, h.y + s * 0.15);
+          cx.bezierCurveTo(x + s, h.y - s * 0.3, x, h.y - s * 0.3, x, h.y + s * 0.3); cx.fill();
+        }
+      },
+    },
+    vibe: {
+      init() {
+        this.chars = '01{}<>=;()[]λ=>constletasyncawaitvibe∑≠ｱｲｳｴｵｶｷｸ';
+        this.cols = Array.from({ length: Math.ceil(W / 16) }, () => rnd(-H, 0));
+        cx.clearRect(0, 0, W, H);
+      },
+      frame(dt) {
+        cx.globalCompositeOperation = 'destination-out';
+        cx.fillStyle = `rgba(0,0,0,${lite() ? 0.2 : 0.11})`; cx.fillRect(0, 0, W, H);
+        cx.globalCompositeOperation = 'source-over';
+        cx.font = '15px "JetBrains Mono", "DejaVu Sans Mono", monospace';
+        this.cols.forEach((y, i) => {
+          const ch = this.chars[(Math.random() * this.chars.length) | 0];
+          cx.fillStyle = Math.random() < 0.08 ? 'rgba(220,255,235,.95)' : 'rgba(40,255,130,.75)';
+          cx.fillText(ch, i * 16, y);
+          this.cols[i] = y > H + rnd(0, 400) ? rnd(-200, 0) : y + 16 * (dt * 60) * 0.45;
+        });
+      },
+    },
+    vice: {
+      init() {
+        fxdom.innerHTML = '<div class="rp-vice-sun"></div><div class="rp-vice-grid"></div>' +
+          PALM.replace('%C', 'l') + PALM.replace('%C', 'r');
+        this.st = Array.from({ length: many(60) }, () => ({ x: rnd(0, W), y: rnd(0, H * 0.6), ph: rnd(0, 6.3), s: rnd(.6, 1.8) }));
+      },
+      frame(dt, t) {
+        cx.clearRect(0, 0, W, H);
+        for (const s of this.st) {
+          const a = 0.3 + 0.7 * Math.abs(Math.sin(t / 1300 + s.ph));
+          cx.fillStyle = `rgba(${s.ph > 3 ? '54,226,255' : '255,140,220'},${a})`;
+          cx.fillRect(s.x, s.y, s.s, s.s);
+        }
+      },
+    },
+    casino: {
+      init() {
+        this.d = Array.from({ length: many(90) }, () => this.dust(true));
+        this.g = Array.from({ length: many(7) }, () => ({ x: rnd(W * .3, W), y: rnd(0, H), ph: rnd(0, 6.3), s: rnd(10, 22) }));
+      },
+      dust(start) { return { x: rnd(0, W), y: start ? rnd(0, H) : H + 10, v: rnd(8, 26), r: rnd(.6, 2.2), ph: rnd(0, 6.3) }; },
+      frame(dt, t) {
+        cx.clearRect(0, 0, W, H);
+        cx.globalCompositeOperation = 'lighter';
+        for (const d of this.d) {
+          d.y -= d.v * dt; d.x += Math.sin(t / 1500 + d.ph) * 6 * dt;
+          if (d.y < -10) Object.assign(d, this.dust(false));
+          const a = 0.35 + 0.45 * Math.abs(Math.sin(t / 900 + d.ph));
+          cx.fillStyle = `rgba(255,214,120,${a})`; cx.beginPath(); cx.arc(d.x, d.y, d.r, 0, 6.3); cx.fill();
+        }
+        for (const g of this.g) {
+          const a = Math.max(0, Math.sin(t / 1400 + g.ph)) ** 3, s = g.s * a;
+          if (a < 0.03) continue;
+          cx.strokeStyle = `rgba(255,240,200,${a * .9})`; cx.lineWidth = 1.2;
+          cx.beginPath(); cx.moveTo(g.x - s, g.y); cx.lineTo(g.x + s, g.y); cx.moveTo(g.x, g.y - s); cx.lineTo(g.x, g.y + s); cx.stroke();
+          cx.save(); cx.translate(g.x, g.y); cx.rotate(.785); cx.strokeRect(-s * .18, -s * .18, s * .36, s * .36); cx.restore();
+        }
+        cx.globalCompositeOperation = 'source-over';
+      },
+    },
+  };
+
+  function stopFx() {
+    cancelAnimationFrame(fxRaf); fxRaf = 0;
+    fxTimers.forEach((x) => { clearInterval(x); clearTimeout(x); }); fxTimers = [];
+    fxdom.innerHTML = ''; cx.clearRect(0, 0, W, H);
+    document.documentElement.classList.remove('rp-glitch');
+  }
+  function startFx() {
+    stopFx();
+    const f = FX[prefs.theme];
+    if (!f) return;
+    f.init();
+    if (prefs.motion === 'off') { f.frame(0.016, 0); return; }
+    last = performance.now();
+    const step = (now) => {
+      fxRaf = requestAnimationFrame(step);
+      if (lite() && now - last < 33) return;  // «Лёгкие» — ~30 кадров
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      f.frame(dt, now);
+    };
+    fxRaf = requestAnimationFrame(step);
+  }
+  function setTheme(name) {
+    if (!THEMES.some(([k]) => k === name)) return;
+    prefs.theme = name; applyPrefs(); startFx();
+    current = ''; showBg(selected());  // перерисовать фон и цвет под новую тему
+  }
+  window.__rpSetTheme = setTheme;
 
   // ------------------------------------------------------------ карточки серверов
   function cardOf(target) {
@@ -237,6 +423,11 @@
           </div>
         </div>
 
+        <div class="rp-sec"><h4>Тема</h4>
+          <div class="rp-themes">${THEMES.map(([k, n, i]) =>
+            `<button class="rp-theme${prefs.theme === k ? ' on' : ''}" data-theme="${k}"><i>${i}</i>${esc(n)}</button>`).join('')}</div>
+        </div>
+
         <div class="rp-sec"><h4>Оформление</h4>
           <div class="rp-row"><span>Фон под сервер<small>арт сервера за интерфейсом</small></span>${toggle('p:bg', prefs.bg)}</div>
           <div class="rp-row"><span>Яркость фона</span>
@@ -282,7 +473,9 @@
   });
   drawer.addEventListener('click', async (e) => {
     const m = e.target.closest('[data-motion]');
-    if (m) { prefs.motion = m.dataset.motion; applyPrefs(); renderDrawer(); return; }
+    if (m) { prefs.motion = m.dataset.motion; applyPrefs(); startFx(); renderDrawer(); return; }
+    const th = e.target.closest('[data-theme]');
+    if (th) { setTheme(th.dataset.theme); renderDrawer(); return; }
     const act = e.target.closest('[data-act]')?.dataset.act;
     if (!act) return;
     if (act === 'close') return closeDrawer();
@@ -294,8 +487,8 @@
     if (act === 'kill' && confirm('Принудительно закрыть RAGE:MP и GTA V?')) bridge('killGame');
     if (act === 'classic') bridge('restartClassic');
     if (act === 'reset') {
-      Object.assign(prefs, { bg: true, strength: 0.55, spot: true, tilt: true, motion: 'full' });
-      applyPrefs(); renderDrawer();
+      Object.assign(prefs, { bg: true, strength: 0.55, spot: true, tilt: true, motion: 'full', theme: 'original' });
+      applyPrefs(); startFx(); renderDrawer();
     }
   });
 
@@ -306,7 +499,14 @@
     markSelected();
   }).observe(document.getElementById('root') || document.body, { childList: true, subtree: true });
 
+  // выбор сервера без клика по карточке (клик в оригинале сразу запускает игру)
+  window.__rpSelectServer = (url) => {
+    if (!isServerBg(url)) return;
+    ls.set(K_SERVER, url); showBg(url); markSelected(); renderServer();
+  };
+
   showBg(selected());
+  startFx();
   mountSide();
   loadServers();
   loadLinux();

@@ -2,9 +2,18 @@
 
 [Русский](README.md) · **English** · [Website](https://alinaz18.github.io/gta5rp-launcher-linux/)
 
-An unofficial [GTA5RP](https://gta5rp.com) launcher for Linux. It shows the original
-interface from the official 5RP installer with a new look, replaces the protected
-Windows core with its own Python core, and starts RAGE:MP and GTA V through Steam's Proton.
+An unofficial [GTA5RP](https://gta5rp.com) launcher for **Linux and Windows**. It shows the
+original interface from the official 5RP installer with a new look and six animated themes,
+and replaces the protected Windows core with its own Python core. On Linux RAGE:MP and GTA V
+start through Steam's Proton, on Windows directly.
+
+![Servers](docs/shots/servers.webp)
+
+| Original | zxc · dead inside | Barbie |
+|---|---|---|
+| ![original](docs/shots/themes-original.webp) | ![zxc](docs/shots/themes-zxc.webp) | ![barbie](docs/shots/themes-barbie.webp) |
+| **Vibe coder** | **Vice City** | **Diamond Casino** |
+| ![vibe](docs/shots/themes-vibe.webp) | ![vice](docs/shots/themes-vice.webp) | ![casino](docs/shots/themes-casino.webp) |
 
 ## Features
 
@@ -19,7 +28,10 @@ Windows core with its own Python core, and starts RAGE:MP and GTA V through Stea
   anti-cheat / RAGE:MP indicators.
 - **Linux settings** — Proton choice, GTA V folder, minimize on play, verbose Proton log,
   system check, EasyAntiCheat Runtime install, force-close the game.
-- **Plain Qt interface** when the official installer is not available (`gta5rp-launcher --classic`).
+- **Six animated themes**, switchable in settings.
+- **Windows version** with the same interface, background and themes; RAGE:MP starts directly.
+- **The official installer downloads itself** if it isn't in your Downloads folder.
+- **Plain Qt interface** as a Linux fallback (`gta5rp-launcher --classic`).
 
 ## Requirements
 
@@ -46,6 +58,12 @@ game start RAGE:MP asks whether it may run from a new folder — press **OK**; i
 for the GTA V folder, pick drive **G:** (your Steam GTA V).
 
 Uninstall with `./uninstall.sh`.
+
+### Windows
+
+Download `GTA5RP-Launcher-Setup-*.exe` (or the portable zip) from the
+[latest release](https://github.com/alinaz18/gta5rp-launcher-linux/releases/latest) and run it.
+The official 5RP launcher is downloaded and installed automatically (its interface is reused).
 
 ## How it works
 
