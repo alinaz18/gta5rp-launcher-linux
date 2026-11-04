@@ -762,34 +762,76 @@ def app_icon() -> QIcon:
     return QIcon()
 
 
+def _run_with_progress(app, text, fn):
+    from PySide6.QtWidgets import QProgressDialog
+    dlg = QProgressDialog(text, None, 0, 0)
+    dlg.setWindowTitle(APP_NAME)
+    dlg.setMinimumDuration(0)
+    dlg.show()
+    fut = POOL.submit(fn)
+    while not fut.done():
+        app.processEvents()
+        time.sleep(0.05)
+    dlg.close()
+    return fut.result()
+
+
 def try_official_ui(app):
-    """Оригинальный интерфейс 5RP (из установщика пользователя) с нашим ядром. None — если нельзя."""
+    """Оригинальный интерфейс 5RP с нашим ядром. None — если нельзя."""
     try:
         import gta5rp_official as official
         import gta5rp_webui as webui
     except ImportError as e:  # нет QtWebEngine/QtWebSockets
         print(f"Оригинальный интерфейс недоступен: {e}", file=sys.stderr)
         return None
-    installer = official.find_installer()
-    if official.needs_update(installer):
-        from PySide6.QtWidgets import QProgressDialog
-        dlg = QProgressDialog("Подготавливаю интерфейс GTA5RP из официального установщика…", None, 0, 0)
-        dlg.setWindowTitle(APP_NAME)
-        dlg.setMinimumDuration(0)
-        dlg.show()
-        fut = POOL.submit(official.extract_from_installer, installer)
-        while not fut.done():
-            app.processEvents()
-            time.sleep(0.05)
-        dlg.close()
-        try:
-            fut.result()
-        except Exception as e:  # noqa: BLE001
-            QMessageBox.warning(None, APP_NAME, f"Не удалось взять оригинальный интерфейс:\n{e}\n\n"
-                                "Открываю упрощённый интерфейс.")
+    try:
+        if core.IS_WIN:
+            _run_with_progress(app, "Подготавливаю интерфейс GTA5RP…", official.prepare_windows)
+        else:
+            installer = official.find_installer()
+            if installer is None and not official.index_html():
+                installer = _run_with_progress(app, "Скачиваю официальный установщик GTA5RP (~100 МБ)…",
+                                               official.download_installer)
+            if official.needs_update(installer):
+                _run_with_progress(app, "Подготавливаю интерфейс GTA5RP из официального установщика…",
+                                   lambda: official.extract_from_installer(installer))
+    except Exception as e:  # noqa: BLE001
+        QMessageBox.warning(None, APP_NAME, f"Не удалось взять оригинальный интерфейс:\n{e}")
     if not official.index_html():
+        if core.IS_WIN:
+            QMessageBox.information(
+                None, APP_NAME, "Не получилось получить интерфейс GTA5RP: нет связи с files.gta5rp.com.\n\n"
+                "Скачайте официальный лаунчер с gta5rp.com и запустите этот лаунчер снова.")
+            QDesktopServices.openUrl(QUrl("https://gta5rp.com"))
+            sys.exit(1)
         return None
     return webui.WebWindow(on_log=lambda t: print(t.rstrip(), file=sys.stderr))
+
+
+def _arg(name):
+    for a in sys.argv:
+        if a.startswith(name + "="):
+            return a.split("=", 1)[1]
+    return None
+
+
+def setup_shot(w):
+    """--shot=файл.png [--shot-page=servers|news|settings] [--shot-js=код] [--shot-delay=мс]: снимок окна."""
+    out = _arg("--shot")
+    if not out:
+        return
+    pages = {"servers": "location.hash='#/servers'", "news": "location.hash='#/news'",
+             "settings": "document.querySelector('[data-act=settings]').click()"}
+    js = _arg("--shot-js") or pages.get(_arg("--shot-page") or "")
+    delay = int(_arg("--shot-delay") or 9000)
+    if js and hasattr(w, "page"):
+        QTimer.singleShot(delay - 2500, lambda: w.page().runJavaScript(js))
+
+    def snap():
+        ok = w.grab().save(out)
+        print(f"shot: {out} {'ok' if ok else 'FAILED'}", file=sys.stderr)
+        QApplication.exit(0 if ok else 2)
+    QTimer.singleShot(delay, snap)
 
 
 def main():
@@ -802,14 +844,14 @@ def main():
             QApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
         except ImportError:
             classic = True
-    app = QApplication([a for a in sys.argv if a != "--classic"])
+    app = QApplication([a for a in sys.argv if a != "--classic" and not a.startswith("--shot")])
     app.setApplicationName("gta5rp-launcher")
     app.setStyle("Fusion")
     app.setStyleSheet(STYLE)
     BUS = Bus()
     BUS.call.connect(lambda fn: fn(), Qt.QueuedConnection)
     orig = Path.home() / ".local/share/icons/hicolor/256x256/apps/gta5rp-launcher-original.png"
-    if not orig.is_file():
+    if not core.IS_WIN and not orig.is_file():
         try:
             core.extract_official_icon(orig)
         except Exception:  # noqa: BLE001
@@ -819,6 +861,9 @@ def main():
     if w is None:
         w = Main()
         w.show()
+    else:
+        w.show()
+    setup_shot(w)
     sys.exit(app.exec())
 
 

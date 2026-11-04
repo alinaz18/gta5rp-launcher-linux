@@ -27,7 +27,8 @@ import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
+IS_WIN = os.name == "nt"
 OFFICIAL_VERSION = "1.0.0.11"  # версия официального лаунчера, с которой сверялся протокол
 
 API = "https://api.gta5rp.com/api/V2/"
@@ -43,9 +44,16 @@ RAGE_WIN_DIR = r"C:\Games\GTA5RP\RageMP"  # папка по умолчанию �
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " \
      "Chrome/140.0.0.0 Electron/38.2.1 Safari/537.36"
 
-CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "gta5rp-launcher"
-CACHE_DIR = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "gta5rp-launcher"
-STATE_DIR = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "gta5rp-launcher"
+if IS_WIN:
+    _APPDATA = Path(os.environ.get("APPDATA", Path.home() / "AppData" / "Roaming"))
+    _LOCAL = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
+    CONFIG_DIR = _APPDATA / "gta5rp-launcher"
+    CACHE_DIR = _LOCAL / "gta5rp-launcher" / "cache"
+    STATE_DIR = _LOCAL / "gta5rp-launcher" / "logs"
+else:
+    CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "gta5rp-launcher"
+    CACHE_DIR = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "gta5rp-launcher"
+    STATE_DIR = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "gta5rp-launcher"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
 # адрес сервера попадает в .reg-файл — пропускаем только обычные символы хоста
@@ -264,6 +272,7 @@ class Setup:
     runtime_entry: Path | None = None    # SteamLinuxRuntime_*/_v2-entry-point
     eac_runtime: Path | None = None
     problems: list[str] = field(default_factory=list)
+    native_rage: Path | None = None      # Windows: настоящая папка RAGE:MP, без Proton
 
     @property
     def pfx(self) -> Path | None:
@@ -271,6 +280,8 @@ class Setup:
 
     @property
     def rage_dir(self) -> Path | None:
+        if self.native_rage:
+            return self.native_rage
         return self.pfx / "drive_c" / "Games" / "GTA5RP" / "RageMP" if self.pfx else None
 
     @property
@@ -334,7 +345,24 @@ def find_runtime(proton: Path, libs: list[Path]) -> Path | None:
     return None
 
 
+def detect_windows(cfg: dict) -> Setup:
+    """Windows: ничего не эмулируем — RAGE:MP ставится в ту же папку, что у официального лаунчера."""
+    s = Setup(native_rage=Path(cfg.get("rage_path") or RAGE_WIN_DIR))
+    try:
+        import winreg
+        for root, key in ((winreg.HKEY_CURRENT_USER, r"Software\Valve\Steam"),):
+            with winreg.OpenKey(root, key) as k:
+                s.steam_root = Path(winreg.QueryValueEx(k, "SteamPath")[0])
+    except OSError:
+        pass
+    if cfg.get("gta_path"):
+        s.gta_path = Path(cfg["gta_path"])
+    return s
+
+
 def detect(cfg: dict) -> Setup:
+    if IS_WIN:
+        return detect_windows(cfg)
     s = Setup()
     roots = steam_roots(cfg)
     if not roots:
@@ -380,6 +408,8 @@ def detect(cfg: dict) -> Setup:
 
 
 def steam_running() -> bool:
+    if IS_WIN:
+        return "steam.exe" in _win_tasks()
     try:
         return subprocess.run(["pgrep", "-x", "steam"], capture_output=True).returncode == 0
     except OSError:
@@ -441,11 +471,7 @@ def write_launch_reg(s: Setup, host: str, port: int, token: str) -> Path:
 
     Токен идёт через файл, а не через командную строку, поэтому в нём можно любые символы.
     """
-    if not _SAFE_HOST.match(host) or not (0 < int(port) < 65536):
-        raise ValueError(f"Странный адрес сервера: {host}:{port}")
-    token = token.strip()
-    if not token or any(ord(ch) < 32 for ch in token):
-        raise ValueError("Сервер выдал пустой или повреждённый игровой токен")
+    token = _check_launch_args(host, port, token)
     base = s.rage_dir.parent  # C:\Games\GTA5RP
     reg = "\r\n".join([
         "Windows Registry Editor Version 5.00",
@@ -492,8 +518,33 @@ def proton_command(s: Setup, args: list[str], debug: bool = False) -> tuple[list
     return cmd, env
 
 
+def _check_launch_args(host: str, port: int, token: str) -> str:
+    if not _SAFE_HOST.match(host) or not (0 < int(port) < 65536):
+        raise ValueError(f"Странный адрес сервера: {host}:{port}")
+    token = token.strip()
+    if not token or any(ord(ch) < 32 for ch in token):
+        raise ValueError("Сервер выдал пустой или повреждённый игровой токен")
+    return token
+
+
+def prepare_launch_windows(s: Setup, host: str, port: int, token: str, progress=None):
+    """Windows: ровно то, что делает GTA5RPLauncher.exe, только открытым кодом."""
+    import winreg
+    token = _check_launch_args(host, port, token)
+    ensure_updater(s.rage_dir, progress)
+    for sub in ("clientdata", "EasyAntiCheat"):
+        (s.rage_dir / sub).mkdir(exist_ok=True)
+    with winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"Software\RAGE-MP") as k:
+        winreg.SetValueEx(k, "launch2.ip", 0, winreg.REG_SZ, host)
+        winreg.SetValueEx(k, "launch2.port", 0, winreg.REG_SZ, str(int(port)))
+        winreg.SetValueEx(k, "launch2.params", 0, winreg.REG_SZ, token)
+    return [str(s.rage_dir / "updater.exe")], dict(os.environ), str(s.rage_dir)
+
+
 def prepare_launch(s: Setup, host: str, port: int, token: str, progress=None, debug=False):
     """Всё, что делает GTA5RPLauncher.exe перед стартом. Возвращает (cmd, env, cwd)."""
+    if IS_WIN:
+        return prepare_launch_windows(s, host, port, token, progress)
     if not s.ok:
         raise RuntimeError("\n".join(s.problems))
     ensure_updater(s.rage_dir, progress)
@@ -512,7 +563,19 @@ def prepare_launch(s: Setup, host: str, port: int, token: str, progress=None, de
 GAME_PROCS = ("GTA5.exe", "PlayGTAV.exe", "ragemp_v.exe", "updater.exe", "ragemp_game_ui.exe")
 
 
+def _win_tasks() -> str:
+    try:
+        out = subprocess.run(["tasklist", "/FO", "CSV", "/NH"], capture_output=True, text=True, timeout=10,
+                             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)).stdout
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return out.lower()
+
+
 def running_game_procs() -> list[str]:
+    if IS_WIN:
+        tasks = _win_tasks()
+        return [p for p in GAME_PROCS if f'"{p.lower()}"' in tasks]
     found = []
     for d in Path("/proc").iterdir():
         if not d.name.isdigit():
@@ -528,7 +591,12 @@ def running_game_procs() -> list[str]:
 
 
 def kill_prefix(s: Setup) -> None:
-    """Аварийно закрыть всё в префиксе GTA V."""
+    """Аварийно закрыть игру (Linux — весь префикс GTA V, Windows — процессы RAGE:MP и GTA V)."""
+    if IS_WIN:
+        for p in GAME_PROCS:
+            subprocess.run(["taskkill", "/F", "/IM", p], capture_output=True, timeout=20,
+                           creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        return
     if not (s.proton and s.compatdata):
         return
     ws = None

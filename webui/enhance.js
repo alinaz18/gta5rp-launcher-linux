@@ -12,6 +12,7 @@
     set(k, v) { try { localStorage.setItem(k, v); } catch {} },
   };
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const IS_WIN = /^Win/.test(navigator.platform || '');
   const isServerBg = (u) => /^https:\/\/([a-z0-9-]+\.)?gta5rp\.com\/sidback\/\d+\.png/.test(u || '');
   const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   const sidOf = (u) => { const m = /sidback\/(\d+)\.png/.exec(u || ''); return m ? +m[1] : 0; };
@@ -140,7 +141,7 @@
   side.innerHTML =
     '<div class="rp-card rp-server" title="Сервер для входа"><div class="rp-thumb"></div><div class="rp-meta"></div></div>' +
     '<div class="rp-card rp-sys" title="Состояние системы — открыть Linux-настройки"></div>' +
-    '<button class="rp-btn" data-act="settings">⚙ Linux-настройки</button>';
+    `<button class="rp-btn" data-act="settings">⚙ ${IS_WIN ? 'Настройки лаунчера' : 'Linux-настройки'}</button>`;
   side.querySelector('.rp-server').addEventListener('click', () => {
     const a = [...document.querySelectorAll('#root nav a')].find((x) => /сервер/i.test(x.textContent));
     a?.click();
@@ -180,9 +181,7 @@
   function renderSys() {
     const box = side.querySelector('.rp-sys');
     if (!linux) { box.innerHTML = '<span class="rp-chip">Проверяю…</span>'; return; }
-    const pick = (n) => linux.checks.find((c) => c.name === n) || {};
-    const chips = [['Steam', pick('Steam').ok], ['Proton', !!linux.proton && pick('Префикс Proton').ok],
-      ['Античит', pick('EasyAntiCheat Runtime').ok], ['RAGE:MP', pick('RAGE:MP').ok]];
+    const chips = linux.chips || [];
     box.innerHTML = chips.map(([n, ok]) => `<span class="rp-chip${ok ? ' ok' : ''}">${n}</span>`).join('');
   }
 
@@ -208,27 +207,28 @@
 
   function renderDrawer() {
     const L = linux || { protons: [], checks: [], problems: [] };
+    const win = L.platform === 'win';
     const opts = L.protons.map((p) => `<option value="${esc(p.path)}" ${p.path === L.proton ? 'selected' : ''}>${esc(p.name)}</option>`).join('');
     drawer.innerHTML = `
       <div class="rp-veil"></div>
       <div class="rp-panel">
-        <div class="rp-head"><div><h3>Linux-настройки</h3><small>GTA5RP Launcher for Linux ${esc(L.version || '')}</small></div>
+        <div class="rp-head"><div><h3>${win ? 'Настройки лаунчера' : 'Linux-настройки'}</h3><small>GTA5RP Launcher ${win ? 'для Windows' : 'for Linux'} ${esc(L.version || '')}</small></div>
           <button class="rp-x" data-act="close" title="Закрыть (Esc)">✕</button></div>
 
         <div class="rp-sec"><h4>Запуск игры</h4>
-          <div class="rp-row"><span>Proton<small>чем запускать RAGE:MP и GTA V</small></span>
+          ${win ? '' : `<div class="rp-row"><span>Proton<small>чем запускать RAGE:MP и GTA V</small></span>
             <select class="rp-select" data-k="proton">${opts || '<option>не найден</option>'}</select></div>
           <div class="rp-row"><span>Папка GTA V</span><button class="rp-btn" data-act="gta">Выбрать…</button></div>
-          <div class="rp-path">${esc(L.gta_path || 'не найдена')}</div>
+          <div class="rp-path">${esc(L.gta_path || 'не найдена')}</div>`}
           <div class="rp-row"><span>Сворачивать после запуска<small>окно уйдёт в панель задач</small></span>${toggle('close_on_play', L.close_on_play)}</div>
-          <div class="rp-row"><span>Подробный лог Proton<small>для поиска проблем</small></span>${toggle('debug_log', L.debug_log)}</div>
+          ${win ? '' : `<div class="rp-row"><span>Подробный лог Proton<small>для поиска проблем</small></span>${toggle('debug_log', L.debug_log)}</div>`}
         </div>
 
         <div class="rp-sec"><h4>Состояние</h4>
           <div class="rp-checks">${L.checks.map((c) => `<div class="rp-check${c.ok ? ' ok' : ''}"><b>${esc(c.name)}</b><em>${esc(c.hint)}</em></div>`).join('')}</div>
           ${L.problems.length ? `<div class="rp-warn">${L.problems.map(esc).join('<br>')}</div>` : ''}
           <div class="rp-actions">
-            ${(L.checks.find((c) => c.name === 'EasyAntiCheat Runtime') || {}).ok
+            ${win || (L.checks.find((c) => c.name === 'EasyAntiCheat Runtime') || {}).ok
               ? '<button class="rp-btn" data-act="refresh">Проверить снова</button>'
               : '<button class="rp-btn primary" data-act="eac">Установить античит</button>'}
             <button class="rp-btn" data-act="rage">Папка RAGE:MP</button>
@@ -251,7 +251,7 @@
         </div>
 
         <div class="rp-foot">Интерфейс — оригинальный GTA5RP ${esc(L.official || '')}, взят из вашего установщика.
-          Ядро, запуск через Proton и оформление — неофициальный лаунчер для Linux; с GTA5RP не связан.</div>
+          Ядро, ${win ? 'запуск' : 'запуск через Proton'} и оформление — неофициальный лаунчер; с GTA5RP не связан.</div>
       </div>`;
   }
 

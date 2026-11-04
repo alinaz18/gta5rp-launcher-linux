@@ -1,0 +1,78 @@
+name: Windows build
+
+# Собирает Windows-версию (PyInstaller + Inno Setup), запускает её на настоящей Windows
+# и снимает скриншоты. На релизе прикладывает установщик и portable-архив.
+on:
+  push:
+    branches: [main]
+    paths: ["gta5rp_*.py", "webui/**", "packaging/windows/**", "tools/make_ico.py", ".github/workflows/windows.yml"]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      TAG: ${{ github.event.release.tag_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install build tools
+        run: pip install pyside6 pyinstaller pillow
+      - name: Version
+        shell: bash
+        run: echo "VER=$(python -c 'import gta5rp_core as c; print(c.VERSION)')" >> "$GITHUB_ENV"
+      - name: Icon
+        run: |
+          mkdir build
+          python tools/make_ico.py data/gta5rp-launcher.svg build/icon.ico
+      - name: PyInstaller
+        run: >
+          pyinstaller --noconfirm --windowed --name "GTA5RP Launcher" --icon build/icon.ico
+          --add-data "webui;webui" --add-data "data;data"
+          --hidden-import gta5rp_webui --hidden-import gta5rp_official
+          gta5rp_launcher.py
+      - name: Run the launcher on Windows and take screenshots
+        shell: pwsh
+        run: |
+          $exe = "dist\GTA5RP Launcher\GTA5RP Launcher.exe"
+          function Shot($name, $page) {
+            $a = @("--shot=$PWD\$name", "--shot-delay=14000")
+            if ($page) { $a += "--shot-page=$page" }
+            $p = Start-Process -FilePath $exe -ArgumentList $a -PassThru
+            if (-not $p.WaitForExit(600000)) { $p.Kill(); throw "launcher hung" }
+            if (-not (Test-Path $name)) { throw "no screenshot $name (exit $($p.ExitCode))" }
+          }
+          Shot "win-home.png" $null
+          Shot "win-servers.png" "servers"
+          Shot "win-settings.png" "settings"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-screenshots
+          path: win-*.png
+      - name: Installer (Inno Setup)
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DAppVersion=$env:VER" packaging\windows\installer.iss
+      - name: Portable zip
+        shell: pwsh
+        run: Compress-Archive -Path "dist\GTA5RP Launcher" -DestinationPath "dist\GTA5RP-Launcher-Windows-portable-$env:VER.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: |
+            dist/GTA5RP-Launcher-Setup-*.exe
+            dist/GTA5RP-Launcher-Windows-portable-*.zip
+      - name: Attach to the release
+        if: github.event_name == 'release'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" dist/GTA5RP-Launcher-Setup-*.exe dist/GTA5RP-Launcher-Windows-portable-*.zip --clobber --repo "$GITHUB_REPOSITORY"

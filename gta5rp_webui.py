@@ -303,25 +303,38 @@ class Bridge(QObject):
         s = core.detect(cfg)
         self.win.backend.setup = s
         rd = s.rage_dir
-        return json.dumps({
-            "protons": [{"name": p.name, "path": str(p)} for p in s.protons],
-            "proton": str(s.proton or ""),
-            "gta_path": str(s.gta_path or ""),
-            "close_on_play": bool(cfg.get("close_on_play")),
-            "debug_log": bool(cfg.get("debug_log")),
-            "problems": s.problems,
-            "checks": [
-                {"name": "Steam", "ok": bool(s.steam_root) and core.steam_running(),
-                 "hint": "запущен" if core.steam_running() else ("не запущен" if s.steam_root else "не найден")},
+        rage_ok = bool(rd and (rd / "updater.exe").is_file())
+        rage = {"name": "RAGE:MP", "ok": rage_ok, "hint": "установлен" if rage_ok else "скачается при запуске"}
+        steam_on = core.steam_running()
+        if core.IS_WIN:
+            checks = [rage,
+                      {"name": "Папка RAGE:MP", "ok": True, "hint": str(rd)},
+                      {"name": "Steam", "ok": steam_on, "hint": "запущен" if steam_on else "не запущен (нужен для Steam-версии GTA V)"}]
+            chips = [["RAGE:MP", rage_ok], ["Steam", steam_on], ["Windows", True], ["Ядро", True]]
+        else:
+            checks = [
+                {"name": "Steam", "ok": bool(s.steam_root) and steam_on,
+                 "hint": "запущен" if steam_on else ("не запущен" if s.steam_root else "не найден")},
                 {"name": "GTA V", "ok": bool(s.gta_path and (s.gta_path / "GTA5.exe").is_file()), "hint": "Steam"},
                 {"name": "Префикс Proton", "ok": bool(s.compatdata), "hint": "compatdata/271590"},
                 {"name": "Steam Linux Runtime", "ok": bool(s.runtime_entry),
                  "hint": s.runtime_entry.parent.name if s.runtime_entry else "нет"},
                 {"name": "EasyAntiCheat Runtime", "ok": bool(s.eac_runtime),
                  "hint": "установлен" if s.eac_runtime else "нужен для античита"},
-                {"name": "RAGE:MP", "ok": bool(rd and (rd / "updater.exe").is_file()),
-                 "hint": "установлен" if rd and (rd / "updater.exe").is_file() else "скачается при запуске"},
-            ],
+                rage,
+            ]
+            chips = [["Steam", checks[0]["ok"]], ["Proton", bool(s.proton) and bool(s.compatdata)],
+                     ["Античит", bool(s.eac_runtime)], ["RAGE:MP", rage_ok]]
+        return json.dumps({
+            "platform": "win" if core.IS_WIN else "linux",
+            "protons": [{"name": p.name, "path": str(p)} for p in s.protons],
+            "proton": str(s.proton or ""),
+            "gta_path": str(s.gta_path or ""),
+            "close_on_play": bool(cfg.get("close_on_play")),
+            "debug_log": bool(cfg.get("debug_log")),
+            "problems": s.problems,
+            "checks": checks,
+            "chips": chips,
             "version": core.VERSION, "official": official.installed_info().get("version", ""),
         }, ensure_ascii=False)
 
