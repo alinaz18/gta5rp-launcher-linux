@@ -1,0 +1,21 @@
+# Maintainer: bagira818 <https://github.com/alinaz18>
+pkgname=gta5rp-launcher-linux
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Unofficial native GTA5RP (RAGE:MP) launcher for Linux (Qt); runs the game via Steam Proton"
+arch=('any')
+url="https://github.com/alinaz18/gta5rp-launcher-linux"
+license=('MIT')
+depends=('python' 'pyside6')
+optdepends=('steam: GTA V and Proton'
+            'wine: unpack the original interface from the official installer'
+            '7zip: take the launcher icon from the official installer')
+provides=('gta5rp-launcher')
+conflicts=('gta5rp-launcher')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+  cd "$pkgname-$pkgver"
+  bash packaging/stage.sh "$pkgdir" /usr
+}

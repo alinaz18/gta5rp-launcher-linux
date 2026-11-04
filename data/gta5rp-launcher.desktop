@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=GTA5RP Launcher
+Comment=Неофициальный лаунчер GTA5RP (RAGE:MP) для Linux
+Exec=@BIN@
+Icon=gta5rp-launcher
+Terminal=false
+Categories=Game;
+StartupWMClass=gta5rp-launcher

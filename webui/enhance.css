@@ -1,0 +1,368 @@
+/* GTA5RP Launcher for Linux — оформление поверх оригинального интерфейса.
+   Структура и фирменный оранжевый остаются от оригинала; меняется только вид. */
+
+@property --rp-c { syntax: '<color>'; inherits: true; initial-value: rgb(255 122 47); }
+
+:root {
+  --rp-orange: #ff7a2f;
+  --rp-orange-2: #ffa24a;
+  --rp-glass: rgba(14, 15, 19, .55);
+  --rp-glass-2: rgba(22, 23, 29, .5);
+  --rp-line: rgba(255, 255, 255, .08);
+  --rp-strength: .55;
+  --mx: 70%; --my: 20%;
+  transition: --rp-c 1.1s ease;
+}
+
+html, body { background: #07080a !important; }
+#root { position: relative; z-index: 1; }
+
+/* ---------------------------------------------------------------- фон */
+#rp-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: #07080a; }
+#rp-bg .rp-img {
+  position: absolute; inset: -3%; opacity: 0;
+  background: center 35% / cover no-repeat;
+  filter: saturate(1.15) brightness(.62);
+  transition: opacity 1.1s ease;
+  animation: rp-kenburns 28s ease-in-out infinite alternate;
+}
+#rp-bg .rp-img.on { opacity: var(--rp-strength); }
+#rp-bg .rp-aurora { position: absolute; inset: -20%; filter: blur(70px); opacity: .5; mix-blend-mode: screen; }
+#rp-bg .rp-aurora i {
+  position: absolute; width: 46%; height: 46%; border-radius: 50%;
+  background: radial-gradient(circle, var(--rp-c) 0%, transparent 65%);
+  animation: rp-drift 22s ease-in-out infinite alternate;
+}
+#rp-bg .rp-aurora i:nth-child(1) { left: 48%; top: 2%; }
+#rp-bg .rp-aurora i:nth-child(2) { left: 70%; top: 52%; animation-duration: 27s; animation-delay: -9s; opacity: .8; }
+#rp-bg .rp-aurora i:nth-child(3) {
+  left: 18%; top: 60%; width: 34%; height: 34%; animation-duration: 31s; animation-delay: -4s; opacity: .55;
+  background: radial-gradient(circle, var(--rp-orange) 0%, transparent 65%);
+}
+#rp-bg .rp-shade {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(7, 8, 10, .82) 0, rgba(7, 8, 10, .35) 32%, rgba(7, 8, 10, .15) 70%, rgba(7, 8, 10, .45) 100%),
+    linear-gradient(180deg, rgba(7, 8, 10, .25) 0, rgba(7, 8, 10, .2) 45%, rgba(7, 8, 10, .85) 100%);
+}
+#rp-bg .rp-spot {
+  position: absolute; inset: 0; opacity: .9;
+  background: radial-gradient(420px circle at var(--mx) var(--my),
+              color-mix(in srgb, var(--rp-c) 16%, transparent), transparent 70%);
+}
+#rp-bg .rp-grain {
+  position: absolute; inset: -50%; opacity: .07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: rp-grain 1.2s steps(6) infinite;
+}
+
+@keyframes rp-kenburns { from { transform: scale(1.02) translate(0, 0); } to { transform: scale(1.1) translate(-1.5%, -1%); } }
+@keyframes rp-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-8%, 6%) scale(1.15); }
+  100% { transform: translate(6%, -4%) scale(.95); }
+}
+@keyframes rp-grain {
+  0% { transform: translate(0, 0); } 20% { transform: translate(-4%, 3%); } 40% { transform: translate(3%, -5%); }
+  60% { transform: translate(-2%, 4%); } 80% { transform: translate(5%, 2%); } 100% { transform: translate(0, 0); }
+}
+
+/* ---------------------------------------------------------------- каркас */
+#root > .draggable { background: transparent !important; border-color: var(--rp-line) !important; }
+#root > .draggable > div:nth-child(2) { background: transparent !important; }
+
+/* левая панель — стекло */
+#root > .draggable > div:first-child {
+  position: relative;
+  background: linear-gradient(180deg, rgba(14, 15, 19, .72), rgba(10, 11, 14, .62)) !important;
+  backdrop-filter: blur(22px) saturate(1.35);
+  border-right: 1px solid var(--rp-line) !important;
+  box-shadow: 20px 0 60px -30px rgba(0, 0, 0, .8) !important;
+}
+#root > .draggable > div:first-child::after {
+  content: ""; position: absolute; top: 0; right: -1px; width: 1px; height: 100%; pointer-events: none;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--rp-c) 70%, transparent) 35%,
+              color-mix(in srgb, var(--rp-orange) 60%, transparent) 70%, transparent);
+  opacity: .7;
+}
+#root > .draggable > div:first-child img[src*="logo"] {
+  filter: drop-shadow(0 0 14px rgba(255, 122, 47, .35));
+  animation: rp-logo 5s ease-in-out infinite;
+}
+@keyframes rp-logo { 50% { filter: drop-shadow(0 0 22px rgba(255, 140, 60, .6)); } }
+
+/* навигация — «пилюли» */
+#root nav ul { padding: 0 10px; gap: 4px !important; }
+#root nav a { padding-right: 8px !important; gap: 12px !important; }
+#root nav a {
+  border-radius: 12px; padding-left: 18px !important;
+  transition: background .35s ease, transform .35s cubic-bezier(.2, .8, .2, 1), box-shadow .35s ease !important;
+}
+#root nav a:not(.bg-brightOrange):hover { background: rgba(255, 255, 255, .06) !important; transform: translateX(4px); }
+#root nav a.bg-brightOrange {
+  background: linear-gradient(135deg, var(--rp-orange), var(--rp-orange-2)) !important;
+  box-shadow: 0 10px 28px -10px rgba(255, 122, 47, .85), inset 0 1px 0 rgba(255, 255, 255, .35);
+}
+#root nav a.bg-brightOrange::before {
+  content: ""; position: absolute; left: -12px; top: 22%; height: 56%; width: 3px; border-radius: 3px;
+  background: var(--rp-orange); box-shadow: 0 0 12px var(--rp-orange);
+}
+
+/* верхняя строка */
+#root > .draggable > div:nth-child(2) > div:first-child p {
+  position: relative; padding: 7px 14px 7px 26px; border-radius: 999px; line-height: 1 !important;
+  background: rgba(255, 255, 255, .05); border: 1px solid var(--rp-line); backdrop-filter: blur(10px);
+}
+#root > .draggable > div:nth-child(2) > div:first-child p::before {
+  content: ""; position: absolute; left: 11px; top: 50%; width: 7px; height: 7px; margin-top: -3.5px;
+  border-radius: 50%; background: #3ddc84; box-shadow: 0 0 0 0 rgba(61, 220, 132, .6);
+  animation: rp-pulse 2s infinite;
+}
+@keyframes rp-pulse { 70% { box-shadow: 0 0 0 8px rgba(61, 220, 132, 0); } 100% { box-shadow: 0 0 0 0 rgba(61, 220, 132, 0); } }
+
+/* разделители и заголовки */
+#root .border-grayGrid { border-color: var(--rp-line) !important; }
+#root h2.font-secondary {
+  background: linear-gradient(90deg, #fff 0%, color-mix(in srgb, var(--rp-c) 55%, #fff) 60%, #fff 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent !important;
+  animation: rp-title 8s linear infinite;
+}
+@keyframes rp-title { to { background-position: -200% 0; } }
+
+/* прокрутка */
+#root .overflow-y-auto::-webkit-scrollbar { width: 8px; }
+#root .overflow-y-auto::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .12); border-radius: 8px; }
+#root .overflow-y-auto::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------------------------------------------------------------- карточки серверов */
+#root button.group:has(img[src*="/sidback/"]) {
+  border-radius: 14px; overflow: hidden; isolation: isolate;
+  background: var(--rp-glass-2);
+  backdrop-filter: blur(12px) saturate(1.2);
+  border: 1px solid var(--rp-line) !important;
+  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, .9);
+  transition: transform .35s cubic-bezier(.2, .8, .2, 1), box-shadow .45s ease, border-color .45s ease;
+  will-change: transform;
+}
+#root button.group:has(img[src*="/sidback/"]) .bg-blackSecondary { background: transparent !important; }
+#root button.group img[src*="/sidback/"] {
+  opacity: .42 !important; filter: grayscale(.35) saturate(1.1);
+  transition: opacity .5s ease, filter .5s ease, transform .9s cubic-bezier(.2, .8, .2, 1) !important;
+}
+#root button.group:hover img[src*="/sidback/"] { opacity: .9 !important; filter: none; transform: scale(1.07); }
+#root button.group:has(img[src*="/sidback/"]):hover {
+  border-color: color-mix(in srgb, var(--rp-c) 65%, transparent) !important;
+  box-shadow: 0 22px 50px -22px color-mix(in srgb, var(--rp-c) 80%, transparent),
+              0 0 0 1px color-mix(in srgb, var(--rp-c) 25%, transparent);
+}
+/* световое пятно под курсором */
+#root button.group:has(img[src*="/sidback/"])::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0;
+  background: radial-gradient(260px circle at var(--px, 50%) var(--py, 50%), rgba(255, 255, 255, .14), transparent 60%);
+  transition: opacity .35s ease;
+}
+#root button.group:has(img[src*="/sidback/"]):hover::before { opacity: 1; }
+/* блик */
+#root button.group:has(img[src*="/sidback/"])::after {
+  content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, .16) 50%, transparent 62%);
+  transform: translateX(-130%);
+}
+#root button.group:has(img[src*="/sidback/"]):hover::after { transform: translateX(130%); transition: transform 1s ease; }
+
+/* выбранный сервер */
+#root button.group.rp-selected {
+  border-color: color-mix(in srgb, var(--rp-c) 80%, transparent) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--rp-c) 45%, transparent),
+              0 18px 46px -20px color-mix(in srgb, var(--rp-c) 90%, transparent);
+}
+
+/* рекомендованные — фирменный оранжевый */
+#root button.group.border-brightOrange:has(img[src*="/sidback/"]) {
+  border-color: rgba(255, 122, 47, .55) !important;
+  box-shadow: 0 16px 44px -22px rgba(255, 122, 47, .9);
+}
+#root button.group [class*="bg-[rgba(255,122,47,100%)]"] {
+  background: linear-gradient(160deg, var(--rp-orange-2), var(--rp-orange)) !important;
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, .25);
+}
+#root button.group [class*="bg-[rgba(47,47,50,43%)]"] {
+  background: rgba(255, 255, 255, .05) !important; backdrop-filter: blur(6px);
+  transition: background .35s ease !important;
+}
+#root button.group:hover [class*="bg-[rgba(47,47,50,43%)]"] {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--rp-c) 80%, #fff 0%), color-mix(in srgb, var(--rp-c) 55%, #000)) !important;
+}
+#root button.group svg.icon { transition: transform .35s cubic-bezier(.2, .8, .2, 1); }
+#root button.group:hover svg.icon { transform: scale(1.25); }
+
+/* прочие блоки оригинала: стекло вместо плоского серого */
+#root .draggable_lock .bg-blackSecondary:not(button *) { background: var(--rp-glass) !important; backdrop-filter: blur(14px); }
+
+/* появление при смене страницы */
+.rp-in { animation: rp-in .6s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i, 0) * 40ms); }
+@keyframes rp-in { from { opacity: 0; transform: translateY(14px) scale(.985); filter: blur(4px); } }
+
+/* строка статуса */
+#root .sticky.bottom-0 {
+  background: rgba(10, 11, 14, .65) !important; backdrop-filter: blur(16px);
+  border-top: 1px solid var(--rp-line);
+}
+#root .sticky.bottom-0 > span.bg-brightOrange {
+  background: linear-gradient(90deg, var(--rp-orange), var(--rp-orange-2), var(--rp-orange)) !important;
+  background-size: 200% 100% !important; animation: rp-title 1.6s linear infinite;
+  box-shadow: 0 0 18px rgba(255, 122, 47, .7);
+}
+
+/* всплывающие уведомления */
+#root .Toastify__toast-container > div { border-radius: 14px !important; backdrop-filter: blur(16px); }
+
+/* ---------------------------------------------------------------- виджеты в левой панели */
+#rp-side { display: flex; flex-direction: column; gap: 10px; padding: 18px 14px 0; animation: rp-in .7s .15s both; }
+.rp-card {
+  position: relative; border-radius: 16px; overflow: hidden;
+  background: rgba(255, 255, 255, .04); border: 1px solid var(--rp-line);
+}
+.rp-server { height: 128px; cursor: pointer; transition: transform .35s cubic-bezier(.2, .8, .2, 1), box-shadow .45s; }
+.rp-server:hover { transform: translateY(-2px); box-shadow: 0 16px 36px -20px var(--rp-c); }
+.rp-server .rp-thumb {
+  position: absolute; inset: 0; background: center 30% / cover no-repeat; opacity: .55;
+  transition: opacity .6s ease, transform 1.2s ease;
+}
+.rp-server:hover .rp-thumb { opacity: .75; transform: scale(1.06); }
+.rp-server::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(8, 9, 12, .1), rgba(8, 9, 12, .9));
+}
+.rp-server .rp-meta { position: absolute; inset: auto 12px 10px; z-index: 1; }
+.rp-label { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255, 255, 255, .55); }
+.rp-name { font-size: 17px; font-weight: 700; color: #fff; margin: 2px 0 6px; text-shadow: 0 2px 12px rgba(0, 0, 0, .6); }
+.rp-online { font-size: 12px; color: rgba(255, 255, 255, .7); display: flex; align-items: center; gap: 6px; }
+.rp-online { flex-wrap: nowrap; white-space: nowrap; }
+.rp-online > * { display: inline-block !important; width: auto !important; flex: none; }
+.rp-online b { color: #fff; font-weight: 700; }
+.rp-dot { flex: none; width: 7px !important; height: 7px; border-radius: 50%; background: #3ddc84; animation: rp-pulse 2s infinite; }
+.rp-bar { height: 4px; border-radius: 4px; background: rgba(255, 255, 255, .12); margin-top: 7px; overflow: hidden; }
+.rp-bar i {
+  display: block; height: 100%; width: 0; border-radius: 4px;
+  background: linear-gradient(90deg, var(--rp-c), var(--rp-orange-2));
+  transition: width 1.2s cubic-bezier(.2, .8, .2, 1);
+}
+.rp-empty { display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 16px;
+  color: rgba(255, 255, 255, .55); font-size: 12.5px; line-height: 1.4; }
+
+.rp-sys { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 10px; cursor: pointer; }
+.rp-chip { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: rgba(255, 255, 255, .78); white-space: nowrap; }
+.rp-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #ff5a5a; box-shadow: 0 0 8px #ff5a5a; flex: none; }
+.rp-chip.ok::before { background: #3ddc84; box-shadow: 0 0 8px #3ddc84; }
+
+.rp-btn {
+  all: unset; box-sizing: border-box; cursor: pointer; text-align: center; font-size: 13px; font-weight: 600;
+  padding: 10px 12px; border-radius: 12px; color: #fff;
+  background: rgba(255, 255, 255, .06); border: 1px solid var(--rp-line);
+  transition: background .3s, transform .3s cubic-bezier(.2, .8, .2, 1), box-shadow .3s;
+}
+.rp-btn:hover { background: rgba(255, 255, 255, .1); transform: translateY(-1px); }
+.rp-btn.primary {
+  background: linear-gradient(135deg, var(--rp-orange), var(--rp-orange-2)); border-color: transparent; color: #1a1a1a;
+  box-shadow: 0 10px 26px -12px rgba(255, 122, 47, .9);
+}
+.rp-btn.danger:hover { background: rgba(255, 80, 80, .18); }
+
+/* ---------------------------------------------------------------- панель Linux-настроек */
+#rp-drawer { position: fixed; inset: 0; z-index: 2147483600; display: none; }
+#rp-drawer.open { display: block; }
+#rp-drawer .rp-veil { position: absolute; inset: 0; background: rgba(3, 4, 6, .45); backdrop-filter: blur(6px);
+  animation: rp-fade .35s ease both; }
+#rp-drawer .rp-panel {
+  position: absolute; top: 12px; right: 12px; bottom: 12px; width: 440px; overflow-y: auto;
+  padding: 22px 22px 28px; border-radius: 20px; color: #eee; font-size: 13.5px;
+  background: linear-gradient(180deg, rgba(20, 21, 27, .82), rgba(12, 13, 17, .86));
+  border: 1px solid rgba(255, 255, 255, .1); backdrop-filter: blur(28px) saturate(1.4);
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .9), 0 0 0 1px color-mix(in srgb, var(--rp-c) 20%, transparent);
+  animation: rp-slide .5s cubic-bezier(.2, .8, .2, 1) both;
+}
+#rp-drawer .rp-panel::-webkit-scrollbar { width: 6px; }
+#rp-drawer .rp-panel::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .15); border-radius: 6px; }
+@keyframes rp-slide { from { transform: translateX(40px); opacity: 0; } }
+@keyframes rp-fade { from { opacity: 0; } }
+.rp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.rp-head h3 { font-size: 20px; font-weight: 800; margin: 0; }
+.rp-head small { color: rgba(255, 255, 255, .5); }
+.rp-x { all: unset; cursor: pointer; width: 32px; height: 32px; border-radius: 10px; text-align: center; line-height: 32px;
+  font-size: 18px; color: #bbb; transition: background .25s, color .25s; }
+.rp-x:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+.rp-sec { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--rp-line); }
+.rp-sec > h4 { margin: 0 0 10px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--rp-c) 60%, #fff); }
+.rp-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 0; }
+.rp-row > span { color: rgba(255, 255, 255, .85); }
+.rp-row > span small { display: block; color: rgba(255, 255, 255, .45); font-size: 11.5px; margin-top: 2px; }
+.rp-path { font-size: 11.5px; color: rgba(255, 255, 255, .55); word-break: break-all; margin: -2px 0 6px; }
+.rp-select {
+  all: unset; box-sizing: border-box; min-width: 200px; max-width: 230px; padding: 8px 30px 8px 12px; border-radius: 10px;
+  background: rgba(255, 255, 255, .06) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23aaa'/%3E%3C/svg%3E") no-repeat right 12px center;
+  border: 1px solid var(--rp-line); color: #fff; font-size: 13px; cursor: pointer;
+}
+.rp-select option { background: #16171c; color: #eee; }
+.rp-toggle { position: relative; width: 42px; height: 24px; flex: none; cursor: pointer; }
+.rp-toggle input { display: none; }
+.rp-toggle i { position: absolute; inset: 0; border-radius: 24px; background: rgba(255, 255, 255, .14); transition: background .3s; }
+.rp-toggle i::after { content: ""; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; transition: transform .35s cubic-bezier(.2, .8, .2, 1); box-shadow: 0 2px 6px rgba(0, 0, 0, .4); }
+.rp-toggle input:checked + i { background: linear-gradient(135deg, var(--rp-orange), var(--rp-orange-2)); }
+.rp-toggle input:checked + i::after { transform: translateX(18px); }
+.rp-range { -webkit-appearance: none; appearance: none; width: 170px; height: 4px; border-radius: 4px;
+  background: rgba(255, 255, 255, .15); outline: none; }
+.rp-range::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--rp-orange); box-shadow: 0 0 0 4px rgba(255, 122, 47, .25); cursor: pointer; }
+.rp-seg { display: inline-flex; padding: 3px; border-radius: 10px; background: rgba(255, 255, 255, .06); border: 1px solid var(--rp-line); }
+.rp-seg button { all: unset; cursor: pointer; padding: 5px 10px; border-radius: 8px; font-size: 12px; color: #bbb; transition: background .25s, color .25s; }
+.rp-seg button.on { background: rgba(255, 255, 255, .14); color: #fff; }
+.rp-checks { display: grid; gap: 6px; }
+.rp-check { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 10px;
+  background: rgba(255, 255, 255, .04); }
+.rp-check b { font-weight: 600; }
+.rp-check em { font-style: normal; font-size: 12px; color: rgba(255, 255, 255, .5); }
+.rp-check.ok b::before, .rp-check b::before { content: "●"; margin-right: 8px; color: #ff5a5a; text-shadow: 0 0 8px #ff5a5a; }
+.rp-check.ok b::before { color: #3ddc84; text-shadow: 0 0 8px #3ddc84; }
+.rp-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.rp-warn { margin-top: 10px; padding: 10px 12px; border-radius: 12px; font-size: 12.5px; line-height: 1.45;
+  background: rgba(255, 170, 60, .1); border: 1px solid rgba(255, 170, 60, .3); color: #ffd9a8; }
+.rp-foot { margin-top: 18px; font-size: 11.5px; color: rgba(255, 255, 255, .4); line-height: 1.5; }
+
+/* ---------------------------------------------------------------- режимы оформления */
+html.rp-nobg #rp-bg .rp-img { opacity: 0 !important; }
+html.rp-nospot #rp-bg .rp-spot { display: none; }
+html.rp-lite #rp-bg .rp-grain, html.rp-lite #rp-bg .rp-aurora i { animation: none; }
+html.rp-lite #rp-bg .rp-img { animation: none; }
+html.rp-lite #root h2.font-secondary { animation: none; }
+html.rp-still *, html.rp-still *::before, html.rp-still *::after { animation: none !important; transition: none !important; }
+html.rp-still #rp-bg .rp-grain { display: none; }
+@media (prefers-reduced-motion: reduce) { #rp-bg .rp-img, #rp-bg .rp-aurora i, #rp-bg .rp-grain { animation: none; } }
+
+/* ---------------------------------------------------------------- главная: баннер, новости, кнопки */
+#root .draggable_lock .border-solid.border-grayGrid:has(> img) {
+  border-radius: 18px; overflow: hidden; border-color: var(--rp-line) !important;
+  box-shadow: 0 20px 50px -30px rgba(0, 0, 0, .9);
+}
+#root .draggable_lock a img:not([src*="/sidback/"]), #root .draggable_lock .swiper img {
+  border-radius: 14px;
+  transition: transform .5s cubic-bezier(.2, .8, .2, 1), box-shadow .5s ease, filter .5s ease;
+}
+#root .draggable_lock a:hover img:not([src*="/sidback/"]), #root .draggable_lock .swiper-slide:hover img {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 40px -22px color-mix(in srgb, var(--rp-c) 85%, transparent);
+  filter: saturate(1.15) brightness(1.05);
+}
+#root .draggable_lock button.bg-brightOrange, #root .draggable_lock a.bg-brightOrange {
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--rp-orange), var(--rp-orange-2)) !important;
+  box-shadow: 0 12px 30px -12px rgba(255, 122, 47, .9), inset 0 1px 0 rgba(255, 255, 255, .3);
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1), box-shadow .3s ease !important;
+}
+#root .draggable_lock button.bg-brightOrange:hover, #root .draggable_lock a.bg-brightOrange:hover {
+  transform: translateY(-2px); box-shadow: 0 18px 36px -14px rgba(255, 122, 47, 1);
+}
+#root .draggable_lock button:not(.group):not(.bg-brightOrange).border { border-radius: 10px; }
