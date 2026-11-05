@@ -480,14 +480,34 @@ class Main(QMainWindow):
         self.proton_box.blockSignals(True)
         self.proton_box.clear()
         for p in s.protons:
-            self.proton_box.addItem(p.name, str(p))
-        if s.proton:
-            i = self.proton_box.findData(str(s.proton))
+            self.proton_box.addItem(core.runner_name(p), str(p))
+        if s.runner:
+            i = self.proton_box.findData(str(s.runner))
             self.proton_box.setCurrentIndex(max(i, 0))
         self.proton_box.blockSignals(False)
         self.gta_edit.setText(str(s.gta_path or ""))
         ok, no = "✔", "✘"
+        found = ", ".join(f"{core.STORE_SHORT[i.store]} ({i.source})" for i in s.installs) or "нет"
         lines = [
+            f"{ok if s.gta_path else no} GTA V: "
+            f"{core.STORES[s.store] + (' · ' + s.source if s.source else '') if s.gta_path else 'не найдена'}"
+            f" — найдено: {found}",
+        ]
+        if s.store != "steam" and s.gta_path:
+            rgl = bool(s.pfx and core.store_launcher(s.pfx, "rgl"))
+            lines += [
+                f"{ok if s.pfx else no} Wine-префикс: {s.pfx or 'не найден'}",
+                f"{ok if s.runner else no} Proton / Wine: {core.runner_name(s.runner) if s.runner else 'не найден'}",
+                f"{ok if rgl else no} Rockstar Games Launcher: {'в префиксе' if rgl else 'не установлен'}",
+            ]
+            if s.store == "egs":
+                lines.append(f"{ok if s.store_launcher else no} Epic Games Launcher: "
+                             f"{'в префиксе' if s.store_launcher else 'не установлен'}")
+            lines.append(f"{ok if s.rage_dir and (s.rage_dir / 'updater.exe').is_file() else '–'} RAGE:MP: "
+                         f"{s.rage_dir or '—'}")
+            self.info.setText("\n".join(lines))
+            return
+        lines += [
             f"{ok if s.steam_root else no} Steam: {s.steam_root or 'не найден'}"
             f" ({'запущен' if core.steam_running() else 'не запущен'})",
             f"{ok if s.compatdata else no} Префикс GTA V: {s.pfx or 'нет'}",
@@ -509,6 +529,8 @@ class Main(QMainWindow):
                 QMessageBox.warning(self, APP_NAME, "В этой папке нет GTA5.exe")
                 return
             self._set("gta_path", d)
+            self._set("prefix", "")
+            self._set("store", core.gta_store(Path(d)))
             self.redetect()
 
     def redetect(self):
@@ -665,7 +687,7 @@ class Main(QMainWindow):
             return
         if not self.api.token and not self.do_login():
             return
-        if not core.steam_running():
+        if self.setup.store == "steam" and not core.steam_running():
             r = QMessageBox.question(self, APP_NAME, "Steam не запущен, а GTA V из Steam без него не стартует.\n"
                                      "Запустить Steam сейчас?")
             if r == QMessageBox.Yes:
