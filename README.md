@@ -2,7 +2,8 @@
 
 **Русский** · [English](README.en.md) · [Сайт](https://alinaz18.github.io/gta5rp-launcher-linux/)
 
-Неофициальный лаунчер [GTA5RP](https://gta5rp.com) для **Linux и Windows**. Интерфейс —
+Неофициальный лаунчер [GTA5RP](https://gta5rp.com) (ГТА 5 РП) для **Linux и Windows** — как играть в
+GTA 5 RP на Linux (Ubuntu, Mint, Debian, Fedora, Arch). Интерфейс —
 оригинальный, из официального установщика 5RP, но с новым оформлением и шестью темами;
 вместо защищённого Windows-ядра работает собственное ядро на Python. На Linux RAGE:MP и
 GTA V запускаются через Proton или Wine, на Windows — напрямую.
