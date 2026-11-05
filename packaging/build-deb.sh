@@ -28,8 +28,8 @@ Description: Unofficial GTA5RP (RAGE:MP) launcher for Linux
  Native launcher for the GTA5RP roleplay project. Shows the original GTA5RP
  interface (taken from the official installer you downloaded) with a Linux
  core: login, servers, news, live server-themed background, Linux settings,
- and one-click start of RAGE:MP through Steam's Proton. Not affiliated with
- GTA5RP.
+ and one-click start of RAGE:MP through Proton or Wine for GTA V from Steam,
+ Rockstar Games Launcher or Epic Games Store. Not affiliated with GTA5RP.
 EOF
 cat > "$ROOT/DEBIAN/postinst" <<'EOF'
 #!/bin/sh

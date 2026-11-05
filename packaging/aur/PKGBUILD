@@ -2,7 +2,7 @@
 pkgname=gta5rp-launcher-linux
 pkgver=1.2.0
 pkgrel=1
-pkgdesc="Unofficial native GTA5RP (RAGE:MP) launcher for Linux (Qt); runs the game via Steam Proton"
+pkgdesc="Unofficial native GTA5RP (RAGE:MP) launcher for Linux (Qt); GTA V from Steam, Rockstar or Epic via Proton/Wine"
 arch=('any')
 url="https://github.com/alinaz18/gta5rp-launcher-linux"
 license=('MIT')

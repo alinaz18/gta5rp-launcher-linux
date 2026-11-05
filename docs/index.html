@@ -3,17 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GTA5RP на Linux — открытый лаунчер</title>
-<meta name="description" content="Официального лаунчера GTA5RP для Linux нет. Этот открытый лаунчер находит GTA V и Proton, ставит RAGE:MP и пускает на сервер 5RP одной кнопкой.">
-<meta property="og:title" content="GTA5RP на Linux — открытый лаунчер">
-<meta property="og:description" content="Играй на GTA5RP с Linux: оригинальный интерфейс, живой фон под сервер, шесть тем, запуск через Proton.">
+<title>ГТА 5 РП на Linux — лаунчер GTA5RP для Линукса (GTA 5 RP Linux)</title>
+<meta name="description" content="Как играть в ГТА 5 РП (GTA5RP) на Linux: бесплатный открытый лаунчер находит GTA V из Steam, Rockstar Games Launcher или Epic Games Store, ставит RAGE:MP и пускает на сервер 5RP одной кнопкой. Ubuntu, Mint, Fedora, Arch.">
+<link rel="canonical" href="https://alinaz18.github.io/gta5rp-launcher-linux/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://alinaz18.github.io/gta5rp-launcher-linux/">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="GTA5RP Launcher for Linux">
+<meta property="og:title" content="ГТА 5 РП на Linux — открытый лаунчер GTA5RP">
+<meta property="og:description" content="Играй на GTA5RP с Linux: оригинальный интерфейс, живой фон под сервер, шесть тем, GTA V из Steam, Rockstar и Epic.">
 <meta property="og:image" content="https://alinaz18.github.io/gta5rp-launcher-linux/shots/servers.webp">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#08070b">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="preload" as="image" href="img/hero-flow.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Unbounded:wght@600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "GTA5RP Launcher for Linux", "alternateName": ["ГТА 5 РП лаунчер для Linux", "GTA 5 RP Linux launcher"], "url": "https://alinaz18.github.io/gta5rp-launcher-linux/", "applicationCategory": "GameApplication", "operatingSystem": "Linux, Windows", "softwareVersion": "1.3.0", "license": "https://opensource.org/licenses/MIT", "inLanguage": "ru", "image": "https://alinaz18.github.io/gta5rp-launcher-linux/shots/servers.webp", "downloadUrl": "https://github.com/alinaz18/gta5rp-launcher-linux/releases/latest", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "RUB"}, "description": "Открытый лаунчер GTA5RP (ГТА 5 РП) для Linux: GTA V из Steam, Rockstar или Epic, RAGE:MP и вход на сервер одной кнопкой."}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Как играть в ГТА 5 РП на Linux?", "acceptedAnswer": {"@type": "Answer", "text": "Установите GTA V Legacy (Steam, Rockstar Games Launcher или Epic Games Store) и этот лаунчер: он сам найдёт игру и Proton, поставит RAGE:MP и подключит к серверу GTA5RP. Официального лаунчера GTA5RP для Linux нет."}}, {"@type": "Question", "name": "Какие версии GTA V подходят для GTA5RP на Linux?", "acceptedAnswer": {"@type": "Answer", "text": "GTA V Legacy из Steam и Rockstar Games Launcher; из Epic Games Store — экспериментально. GTA V Enhanced RAGE:MP не поддерживает."}}, {"@type": "Question", "name": "Это официальный лаунчер GTA5RP?", "acceptedAnswer": {"@type": "Answer", "text": "Нет. Это независимый проект с открытым кодом, не связанный с GTA5RP, RAGE Multiplayer, Rockstar Games или Valve."}}]}]</script>
 <style>
 :root {
   --bg: #08070b; --bg2: #0e0c12; --text: #f3f1f5; --muted: #a29eac; --dim: #6f6b78;
@@ -194,6 +202,23 @@ code { font-family: "JetBrains Mono", monospace; font-size: .86em; padding: 2px 
 .req div { padding: 16px; border-radius: 16px; border: 1px solid var(--line); font-size: 14px; color: #cbc6d2; background: rgba(255,255,255,.02); }
 .req b { display: block; color: #fff; margin-bottom: 2px; }
 
+/* ---------------------------------------------------------------- версии GTA V */
+.vers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 46px; }
+@media (max-width: 1000px) { .vers { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .vers { grid-template-columns: 1fr; } }
+.ver { border-radius: var(--r); border: 1px solid var(--line); background: var(--card); padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+.ver h3 { font-family: Unbounded, Inter, sans-serif; font-size: 18px; margin: 0; font-weight: 700; }
+.ver p { margin: 0; color: #c2bdca; font-size: 14.5px; }
+.ver ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14px; color: #cbc6d2; }
+.ver li { position: relative; padding-left: 20px; }
+.ver li::before { content: "•"; position: absolute; left: 4px; color: var(--or2); }
+.badge { align-self: flex-start; font-size: 12px; font-weight: 800; letter-spacing: .06em; padding: 5px 10px; border-radius: 999px; border: 1px solid; }
+.badge.ok { color: #3ddc84; border-color: rgba(61,220,132,.35); background: rgba(61,220,132,.08); }
+.badge.exp { color: var(--or2); border-color: rgba(255,176,84,.4); background: rgba(255,176,84,.08); }
+.badge.no { color: #ff6b6b; border-color: rgba(255,107,107,.35); background: rgba(255,107,107,.08); }
+.ver.off { opacity: .8; }
+.vnote { margin-top: 16px; color: var(--muted); font-size: 14px; text-align: center; }
+
 /* ---------------------------------------------------------------- faq / footer */
 .faq { max-width: 860px; margin: 46px auto 0; }
 details { border-bottom: 1px solid var(--line); }
@@ -231,7 +256,7 @@ footer b { color: #d9d5df; font-weight: 600; }
 <nav class="nav" id="nav"><div class="wrap">
   <a class="brand" href="#top"><img src="img/5rp-logo.svg" alt="GTA5RP"><em>LAUNCHER</em></a>
   <div class="links">
-    <a class="hm" href="#look">Как выглядит</a><a class="hm" href="#features">Возможности</a>
+    <a class="hm" href="#look">Как выглядит</a><a class="hm" href="#features">Возможности</a><a class="hm" href="#versions">Версии GTA V</a>
     <a class="hm" href="#themes">Темы</a><a class="hm" href="#install">Установка</a>
     <a class="gh" href="https://github.com/alinaz18/gta5rp-launcher-linux">GitHub</a>
   </div>
@@ -242,9 +267,9 @@ footer b { color: #d9d5df; font-weight: 600; }
   <div class="hero-shade"></div>
   <div class="wrap">
     <div>
-      <span class="eyebrow rv"><b id="vtag">v1.2</b> Неофициальный · открытый код</span>
+      <span class="eyebrow rv"><b id="vtag">v1.3</b> Неофициальный · открытый код</span>
       <h1 class="rv">GTA5RP<span class="grad">на Linux.</span></h1>
-      <p class="lead rv">Официального лаунчера GTA5RP для Linux нет. Этот — открытый: сам находит GTA V и Proton, ставит RAGE:MP и пускает на сервер одной кнопкой. Интерфейс — оригинальный, из установщика 5RP.</p>
+      <p class="lead rv">Официального лаунчера GTA5RP (ГТА 5 РП) для Linux нет. Этот — открытый: сам находит GTA V из Steam, Rockstar Games Launcher или Epic Games Store, ставит RAGE:MP и пускает на сервер одной кнопкой. Интерфейс — оригинальный, из установщика 5RP.</p>
       <div class="cta rv">
         <a class="btn orange" href="#install">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/></svg>
@@ -254,7 +279,7 @@ footer b { color: #d9d5df; font-weight: 600; }
           <span>Как это работает<small>и почему это безопасно</small></span></a>
       </div>
       <div class="facts rv">
-        <div><b>6</b>тем с анимацией</div><div><b>Proton</b>через ваш Steam</div><div><b>1 клик</b>до сервера</div><div><b>MIT</b>открытый код</div>
+        <div><b>6</b>тем с анимацией</div><div><b>3 магазина</b>Steam · Rockstar · Epic</div><div><b>1 клик</b>до сервера</div><div><b>MIT</b>открытый код</div>
       </div>
     </div>
     <div class="hero-art rv"><img src="img/tux-5rp.svg" alt="Tux с карточкой GTA5RP" width="600" height="580"></div>
@@ -293,12 +318,12 @@ footer b { color: #d9d5df; font-weight: 600; }
       <div class="tile t-c rv">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 3l14 9-14 9V3z"/></svg></div>
         <h3>Играть в один клик</h3>
-        <p>RAGE:MP, токен и запуск через Proton из Steam — лаунчер делает это сам.</p>
+        <p>RAGE:MP, токен и запуск через Proton или Wine — лаунчер делает это сам.</p>
       </div>
       <div class="tile t-d rv">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2 4 5v6c0 5 3.4 9.5 8 11 4.6-1.5 8-6 8-11V5l-8-3z"/><path d="m9 12 2 2 4-4"/></svg></div>
         <h3>Проверка системы</h3>
-        <p>Steam, Proton, Runtime, EasyAntiCheat и RAGE:MP — с подсказками, если чего-то нет.</p>
+        <p>Игра, префикс, Proton или Wine, лаунчер магазина, EasyAntiCheat и RAGE:MP — с подсказками, если чего-то нет.</p>
       </div>
       <div class="tile t-e rv">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/></svg></div>
@@ -308,7 +333,7 @@ footer b { color: #d9d5df; font-weight: 600; }
       <div class="tile t-f rv">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></div>
         <h3>Linux-настройки</h3>
-        <p>Proton, папка игры, логи, сворачивание после запуска и вид лаунчера.</p>
+        <p>Версия игры, Proton или Wine, папка игры и префикс, логи и вид лаунчера.</p>
         <div class="shot2" aria-hidden="true"></div>
       </div>
       <div class="tile t-g rv">
@@ -320,6 +345,31 @@ footer b { color: #d9d5df; font-weight: 600; }
 <i>✓</i> CI: install.sh на 6 дистрибутивах</pre>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="versions">
+  <div class="wrap center">
+    <span class="kicker rv">Версии GTA V</span>
+    <h2 class="rv">Из какого магазина ваша игра?</h2>
+    <p class="sub rv">Лаунчер сам понимает, откуда GTA V, и запускает её нужным способом. Выбрать вручную можно в «Linux-настройках».</p>
+  </div>
+  <div class="wrap">
+    <div class="vers">
+      <div class="ver rv"><span class="badge ok">✓ Поддерживается</span><h3>Steam</h3>
+        <p>GTA V Legacy в Steam с включённым Proton.</p>
+        <ul><li>префикс Steam (compatdata)</li><li>Proton и Steam Linux Runtime из Steam</li><li>Steam запущен во время игры</li></ul></div>
+      <div class="ver rv"><span class="badge ok">✓ Поддерживается</span><h3>Rockstar Games Launcher</h3>
+        <p>GTA V Legacy, купленная в Rockstar Store.</p>
+        <ul><li>найдёт в Heroic, Lutris, Bottles или Wine-префиксе</li><li>Proton (GE-Proton) или Wine вашего префикса</li><li>нет Rockstar Launcher в префиксе — поставит кнопкой</li></ul></div>
+      <div class="ver rv"><span class="badge exp">β Экспериментально</span><h3>Epic Games Store</h3>
+        <p>GTA V Legacy из Epic, обычно установленная через Heroic.</p>
+        <ul><li>префикс и Proton берёт из Heroic</li><li>нужен настоящий Epic Games Launcher в префиксе — поставит кнопкой</li><li>один раз войти в Epic и привязать игру</li></ul></div>
+      <div class="ver off rv"><span class="badge no">✕ Не поддерживается</span><h3>GTA V Enhanced</h3>
+        <p>Новая версия из любого магазина. RAGE:MP, а значит и 5RP, работает только с Legacy.</p>
+        <ul><li>поставьте рядом бесплатную Legacy-версию</li><li>лаунчер сам выберет Legacy, если есть обе</li></ul></div>
+    </div>
+    <p class="vnote rv">На Windows поддерживаются все магазины: RAGE:MP запускает GTA V сам, как в официальном лаунчере.</p>
   </div>
 </section>
 
@@ -343,7 +393,7 @@ footer b { color: #d9d5df; font-weight: 600; }
     <div class="steps">
       <div class="step rv"><div class="n">01</div><h3>Берёт интерфейс</h3><p>Из официального <code>launcher_setup.exe</code> — найдёт его в «Загрузках» или скачает с files.gta5rp.com.</p></div>
       <div class="step rv"><div class="n">02</div><h3>Заменяет ядро</h3><p>Закрытое Windows-ядро заменено открытым Python-кодом, который отвечает интерфейсу так же, как оригинал.</p></div>
-      <div class="step rv"><div class="n">03</div><h3>Запускает игру</h3><p>RAGE:MP получает адрес сервера и токен (<code>launch2.*</code>) и стартует через Proton из Steam.</p></div>
+      <div class="step rv"><div class="n">03</div><h3>Запускает игру</h3><p>RAGE:MP получает адрес сервера и токен (<code>launch2.*</code>) и стартует через Proton — в префиксе Steam, Heroic, Lutris, Bottles или вашем Wine.</p></div>
     </div>
   </div>
 </div>
@@ -379,9 +429,9 @@ footer b { color: #d9d5df; font-weight: 600; }
       </div>
     </div>
     <div class="req rv">
-      <div><b>GTA V в Steam</b>на Linux — с Proton, запустить один раз</div>
+      <div><b>GTA V Legacy</b>из Steam, Rockstar Games Launcher или Epic Games Store</div>
       <div><b>EAC Runtime</b>лаунчер предложит поставить</div>
-      <div><b>Steam запущен</b>во время игры</div>
+      <div><b>Proton или Wine</b>из Steam, Heroic, Lutris или системы</div>
       <div><b>~100 МБ</b>интерфейс 5RP при первом запуске</div>
     </div>
     <p class="winnote rv">Играете на Windows? Пользуйтесь официальным лаунчером с <a href="https://gta5rp.com">gta5rp.com</a>. Сборка этого лаунчера для Windows тоже есть — только ради тем оформления, она лежит в <a href="https://github.com/alinaz18/gta5rp-launcher-linux/releases/latest">релизах</a>.</p>
@@ -391,8 +441,11 @@ footer b { color: #d9d5df; font-weight: 600; }
 <section id="faq">
   <div class="wrap center"><span class="kicker rv">Вопросы</span><h2 class="rv">Частые вопросы</h2></div>
   <div class="wrap faq">
+    <details class="rv"><summary>Как играть в ГТА 5 РП на Linux?</summary><p>Установите GTA V Legacy (Steam, Rockstar Games Launcher или Epic Games Store) и этот лаунчер: он сам найдёт игру и Proton, поставит RAGE:MP и подключит к серверу GTA5RP. Официального лаунчера GTA5RP для Linux нет. Подходят Ubuntu, Linux Mint, Debian, Fedora, Arch и другие дистрибутивы.</p></details>
     <details class="rv"><summary>Это официальный лаунчер?</summary><p>Нет. Это независимый проект с открытым кодом, не связанный с GTA5RP, RAGE Multiplayer, Rockstar Games или Valve.</p></details>
-    <details class="rv"><summary>Зачем он, если есть официальный лаунчер?</summary><p>Официальный лаунчер 5RP работает только на Windows. Этот — для тех, кто играет на Linux: он делает то же самое, но через Proton из Steam. На Windows проще пользоваться официальным.</p></details>
+    <details class="rv"><summary>Зачем он, если есть официальный лаунчер?</summary><p>Официальный лаунчер 5RP работает только на Windows. Этот — для тех, кто играет на Linux: он делает то же самое, но через Proton или Wine. На Windows проще пользоваться официальным.</p></details>
+    <details class="rv"><summary>У меня GTA V не из Steam</summary><p>Подходят версии из Rockstar Games Launcher и Epic Games Store. Лаунчер сам находит их в Heroic, Lutris, Bottles и обычных Wine-префиксах; если не нашёл — укажите папку игры и префикс в «Linux-настройках». Для Epic-версии в том же префиксе нужен настоящий Epic Games Launcher: лаунчер поставит его кнопкой, а вы один раз войдёте в аккаунт.</p></details>
+    <details class="rv"><summary>Подойдёт GTA V Enhanced?</summary><p>Нет — RAGE:MP работает только с GTA V Legacy. Её можно бесплатно поставить рядом, если у вас есть Enhanced: в Steam это отдельная игра «Grand Theft Auto V Legacy», в Rockstar и Epic — отдельный вариант установки.</p></details>
     <details class="rv"><summary>Безопасно ли вводить пароль?</summary><p>Вход происходит в оригинальном окне 5RP и уходит напрямую на api.gta5rp.com — как в официальном лаунчере. Лаунчер сохраняет только токен сессии (его можно сбросить кнопкой «Выйти»). Весь код открыт на GitHub.</p></details>
     <details class="rv"><summary>RAGE:MP спрашивает про новую папку</summary><p>Это обычная проверка RAGE:MP при первом запуске — нажмите «OK». Если на Linux он спросит папку GTA V — выберите диск G:.</p></details>
     <details class="rv"><summary>Меня не забанят?</summary><p>Лаунчер делает то же, что официальный: передаёт адрес сервера и токен в RAGE:MP, античит работает как обычно. Гарантий нет — решения о блокировках принимает администрация 5RP.</p></details>
@@ -435,7 +488,7 @@ footer b { color: #d9d5df; font-weight: 600; }
     ['servers', 'Сервера', 'Наведите на сервер — фон окна перетекает в его арт и цвета.'],
     ['home', 'Главная', 'Главная 5RP: новости, видео, «Ваш сервер» с онлайном и индикаторы системы.'],
     ['news', 'Новости', 'Новости 5RP в стеклянном оформлении.'],
-    ['settings', 'Настройки', 'Linux-настройки: Proton, папка GTA V, проверка системы, темы.'],
+    ['settings', 'Настройки', 'Linux-настройки: версия игры, Proton или Wine, папка GTA V, проверка системы, темы.'],
   ];
   function gallery(screen, cap, items, prefix, seg) {
     screen.innerHTML = items.map(([k, t], i) => `<img src="shots/${prefix}${k}.webp" alt="${t}" ${i ? 'loading="lazy"' : ''}>`).join('');

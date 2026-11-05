@@ -166,12 +166,14 @@ def _wine() -> tuple[list[str], Path | None]:
     if shutil.which("wine"):
         return ["wine"], Path(shutil.which("wineserver") or "wineserver")
     s = core.detect(core.load_config())
+    if s.wine:
+        return [str(s.wine)], s.wine.parent / "wineserver"
     if s.proton:
         for b in ("files/bin", "dist/bin"):
             w = s.proton / b / "wine"
             if w.is_file():
                 return [str(w)], s.proton / b / "wineserver"
-    raise RuntimeError("Для распаковки установщика нужен Wine (пакет wine) или Proton из Steam.")
+    raise RuntimeError("Для распаковки установщика нужен Wine (пакет wine) или Proton (Steam, Heroic, Lutris).")
 
 
 def unpack_asar(asar: Path, source_name: str, size: int, mtime: float) -> dict:

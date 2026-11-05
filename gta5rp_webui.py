@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 from pathlib import Path
 
 from PySide6.QtCore import QFile, QIODevice, QObject, QProcess, QProcessEnvironment, Qt, QTimer, QUrl, Signal, Slot
@@ -311,11 +312,12 @@ class Bridge(QObject):
                       {"name": "Папка RAGE:MP", "ok": True, "hint": str(rd)},
                       {"name": "Steam", "ok": steam_on, "hint": "запущен" if steam_on else "не запущен (нужен для Steam-версии GTA V)"}]
             chips = [["RAGE:MP", rage_ok], ["Steam", steam_on], ["Windows", True], ["Ядро", True]]
-        else:
+        elif s.store == "steam" or not s.gta_path:
             checks = [
+                {"name": "GTA V", "ok": bool(s.gta_path and (s.gta_path / "GTA5.exe").is_file()),
+                 "hint": "Steam" if s.gta_path else "не найдена"},
                 {"name": "Steam", "ok": bool(s.steam_root) and steam_on,
                  "hint": "запущен" if steam_on else ("не запущен" if s.steam_root else "не найден")},
-                {"name": "GTA V", "ok": bool(s.gta_path and (s.gta_path / "GTA5.exe").is_file()), "hint": "Steam"},
                 {"name": "Префикс Proton", "ok": bool(s.compatdata), "hint": "compatdata/271590"},
                 {"name": "Steam Linux Runtime", "ok": bool(s.runtime_entry),
                  "hint": s.runtime_entry.parent.name if s.runtime_entry else "нет"},
@@ -323,13 +325,47 @@ class Bridge(QObject):
                  "hint": "установлен" if s.eac_runtime else "нужен для античита"},
                 rage,
             ]
-            chips = [["Steam", checks[0]["ok"]], ["Proton", bool(s.proton) and bool(s.compatdata)],
+            chips = [["Steam", checks[1]["ok"]], ["Proton", bool(s.proton) and bool(s.compatdata)],
                      ["Античит", bool(s.eac_runtime)], ["RAGE:MP", rage_ok]]
+        else:
+            rgl = bool(s.pfx and core.store_launcher(s.pfx, "rgl"))
+            checks = [
+                {"name": "GTA V", "ok": bool((s.gta_path / "GTA5.exe").is_file()),
+                 "hint": f"{core.STORES[s.store]}" + (f" · {s.source}" if s.source else "")},
+                {"name": "Wine-префикс", "ok": bool(s.pfx), "hint": s.pfx.name if s.pfx else "не найден"},
+                {"name": "Proton / Wine", "ok": bool(s.runner),
+                 "hint": core.runner_name(s.runner) if s.runner else "не найден"},
+                {"name": "Rockstar Games Launcher", "ok": rgl, "hint": "в префиксе" if rgl else "не установлен"},
+            ]
+            if s.store == "egs":
+                checks.append({"name": "Epic Games Launcher", "ok": bool(s.store_launcher),
+                               "hint": "в префиксе" if s.store_launcher else "не установлен"})
+            checks += [{"name": "EasyAntiCheat Runtime", "ok": bool(s.eac_runtime),
+                        "hint": "установлен" if s.eac_runtime else ("нужен для античита" if s.steam_root
+                                                                    else "ставится через Steam, не обязателен")},
+                       rage]
+            chips = [[core.STORE_SHORT[s.store], bool(s.gta_path) and bool(s.pfx)],
+                     ["Wine" if s.wine else "Proton", bool(s.runner)],
+                     ["Лаунчер", rgl and (s.store != "egs" or bool(s.store_launcher))], ["RAGE:MP", rage_ok]]
+        need = ""
+        if s.store in ("rgl", "egs") and s.pfx and s.runner:
+            if not core.store_launcher(s.pfx, "rgl"):
+                need = "rgl"
+            elif s.store == "egs" and not s.store_launcher:
+                need = "egs"
+        found = {}
+        for i in s.installs:
+            found.setdefault(i.store, f"{i.source}" + (" · Enhanced" if i.edition == "enhanced" else ""))
         return json.dumps({
             "platform": "win" if core.IS_WIN else "linux",
-            "protons": [{"name": p.name, "path": str(p)} for p in s.protons],
-            "proton": str(s.proton or ""),
+            "protons": [{"name": core.runner_name(p), "path": str(p)} for p in s.protons],
+            "proton": str(s.runner or ""),
             "gta_path": str(s.gta_path or ""),
+            "store": cfg.get("store") or "auto", "store_now": s.store if s.gta_path else "",
+            "stores": [{"id": k, "name": v, "found": found.get(k, "")} for k, v in core.STORES.items()],
+            "prefix": str(s.pfx or "") if s.store != "steam" else "",
+            "need_launcher": need,
+            "can_open_egl": s.store == "egs" and bool(s.store_launcher),
             "close_on_play": bool(cfg.get("close_on_play")),
             "debug_log": bool(cfg.get("debug_log")),
             "problems": s.problems,
@@ -346,8 +382,13 @@ class Bridge(QObject):
     def setLinux(self, key, value_json):
         cfg = core.load_config()
         value = json.loads(value_json)
-        if key == "proton" and (not value or (Path(value) / "proton").is_file()):
+        if key == "proton" and (not value or (Path(value) / "proton").is_file() or Path(value).is_file()):
             cfg["proton"] = value
+        elif key == "store" and value in ("auto", *core.STORES):
+            cfg["store"] = value
+            cfg["gta_path"] = cfg["prefix"] = ""  # папку и префикс ищем заново под новый магазин
+        elif key == "prefix" and value == "":
+            cfg["prefix"] = ""
         elif key in ("close_on_play", "debug_log"):
             cfg[key] = bool(value)
         elif key == "gta_path" and value == "":
@@ -363,8 +404,53 @@ class Bridge(QObject):
         if d and (Path(d) / "GTA5.exe").is_file():
             cfg = core.load_config()
             cfg["gta_path"] = d
+            cfg["prefix"] = ""
+            cfg["store"] = core.gta_store(Path(d))
             core.save_config(cfg)
         return self._state()
+
+    @Slot(result=str)
+    def pickPrefix(self):
+        from PySide6.QtWidgets import QFileDialog, QMessageBox
+        cur = core.detect(core.load_config()).pfx
+        d = QFileDialog.getExistingDirectory(self.win, "Wine-префикс с GTA V (папка, где лежит drive_c)",
+                                             str(cur or Path.home()))
+        if d:
+            if core.wine_prefix(Path(d)):
+                cfg = core.load_config()
+                cfg["prefix"] = d
+                core.save_config(cfg)
+            else:
+                QMessageBox.warning(self.win, "GTA5RP", "В этой папке нет drive_c — это не Wine-префикс.")
+        return self._state()
+
+    def _run_in_prefix(self, make, what: str):
+        """Скачать/запустить что-то в префиксе игры в фоне, не блокируя окно."""
+        import threading
+        backend = self.win.backend
+
+        def work():
+            try:
+                cmd, env, cwd = make(lambda m: backend.log.emit(m))
+                backend.log.emit(f"{what}: запускаю…")
+                subprocess.Popen(cmd, env=env, cwd=cwd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                 start_new_session=True)
+            except Exception as e:  # noqa: BLE001
+                backend.log.emit(f"{what}: ошибка — {e}")
+        threading.Thread(target=work, daemon=True).start()
+
+    @Slot(str)
+    def installStoreLauncher(self, which):
+        if which not in ("rgl", "egs"):
+            return
+        s = core.detect(core.load_config())
+        name = "Rockstar Games Launcher" if which == "rgl" else "Epic Games Launcher"
+        self._run_in_prefix(lambda pr: core.store_launcher_installer(s, which, pr), f"Установка {name}")
+
+    @Slot()
+    def openStoreLauncher(self):
+        s = core.detect(core.load_config())
+        self._run_in_prefix(lambda pr: core.open_store_launcher(s), "Epic Games Launcher")
 
     @Slot()
     def installEac(self):

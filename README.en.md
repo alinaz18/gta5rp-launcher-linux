@@ -5,7 +5,21 @@
 An unofficial [GTA5RP](https://gta5rp.com) launcher for **Linux and Windows**. It shows the
 original interface from the official 5RP installer with a new look and six animated themes,
 and replaces the protected Windows core with its own Python core. On Linux RAGE:MP and GTA V
-start through Steam's Proton, on Windows directly.
+start through Proton or Wine, on Windows directly.
+
+## Supported GTA V versions
+
+| Version | Linux | How it starts |
+|---|---|---|
+| **Steam** (Legacy) | ✅ supported | Steam prefix `compatdata/271590`, Proton and Steam Linux Runtime from Steam |
+| **Rockstar Games Launcher** (Legacy) | ✅ supported | Heroic, Lutris, Bottles or plain Wine prefix; that prefix's Proton (GE-Proton) or Wine |
+| **Epic Games Store** (Legacy) | 🧪 experimental | Heroic prefix; it needs the real Epic Games Launcher (one-click install from the launcher) |
+| **GTA V Enhanced** (any store) | ❌ no | RAGE:MP only supports Legacy — install the Legacy edition alongside |
+
+The store is detected from files in the game folder (`steam_api64.dll` — Steam,
+`EOSSDK-Win64-Shipping.dll` — Epic, otherwise Rockstar). Store, game folder, Wine prefix
+and Proton/Wine can be set by hand in "Linux settings". On Windows every store works:
+RAGE:MP starts GTA V itself.
 
 ![Servers](docs/shots/servers.webp)
 
@@ -24,9 +38,10 @@ start through Steam's Proton, on Windows directly.
   its theme.
 - **New look** — glass sidebar, cards with 3D tilt and shine, staggered animations; can be
   toned down or turned off for slower PCs.
-- **Sidebar widgets** — "Your server" card with live online count and Steam / Proton /
+- **Sidebar widgets** — "Your server" card with live online count and store / Proton /
   anti-cheat / RAGE:MP indicators.
-- **Linux settings** — Proton choice, GTA V folder, minimize on play, verbose Proton log,
+- **Linux settings** — game version (Steam / Rockstar / Epic), Proton or Wine, GTA V folder
+  and Wine prefix, Rockstar / Epic Games Launcher install into the prefix, minimize on play, verbose Proton log,
   system check, EasyAntiCheat Runtime install, force-close the game.
 - **Six animated themes**, switchable in settings.
 - **Windows version** with the same interface, background and themes; RAGE:MP starts directly.
@@ -35,8 +50,16 @@ start through Steam's Proton, on Windows directly.
 
 ## Requirements
 
-- GTA V (Legacy) on Steam with Proton enabled, started once from Steam;
-- Steam running while you play;
+- GTA V **Legacy** from one of the stores:
+  - **Steam** — with Proton enabled, started once from Steam; Steam running while you play;
+  - **Rockstar Games Launcher** — installed into a Wine prefix (Heroic, Lutris, Bottles or
+    your own) with the Rockstar Games Launcher in the same prefix;
+  - **Epic Games Store** — usually via Heroic; the same prefix needs the real Epic Games
+    Launcher (Heroic's stub is not enough: the Rockstar Launcher checks that Epic started it).
+    The launcher installs it with one click; then sign in to Epic once and link the game —
+    Heroic's "Sync with Epic Games Launcher" on that prefix, or "Install" in Epic into the
+    game folder (files are verified, not re-downloaded);
+- Proton (from Steam, Heroic, Lutris, ProtonUp-Qt) or Wine;
 - **Proton EasyAntiCheat Runtime** (RAGE:MP uses EasyAntiCheat; the launcher offers to install it);
 - the official `launcher_setup_*.exe` from [gta5rp.com](https://gta5rp.com) in your
   Downloads folder — the original interface is taken from it;
@@ -55,7 +78,7 @@ Or use packages from [releases](https://github.com/alinaz18/gta5rp-launcher-linu
 
 On first launch the interface is unpacked from the installer once (~10 s). On the first
 game start RAGE:MP asks whether it may run from a new folder — press **OK**; if it asks
-for the GTA V folder, pick drive **G:** (your Steam GTA V).
+for the GTA V folder, pick drive **G:** (your GTA V).
 
 Uninstall with `./uninstall.sh`.
 
@@ -75,7 +98,8 @@ exchange JSON messages. This launcher:
 3. on "Play" does what the original does: puts the RAGE:MP `updater.exe` into
    `C:\Games\GTA5RP\RageMP`, writes the server address and game token to
    `HKCU\Software\RAGE-MP` (`launch2.*`) and runs the updater through Proton in the
-   Steam GTA V prefix.
+   GTA V prefix (Steam: `compatdata/271590`; Rockstar and Epic: the Wine prefix they live
+   in, through Proton without Steam like Heroic/umu do, or through Wine).
 
 GTA5RP's interface files are not part of this repository — they come only from the
 installer you downloaded yourself. A daily [watchdog](.github/workflows/watchdog.yml)

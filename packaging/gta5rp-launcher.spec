@@ -15,8 +15,9 @@ Suggests:       p7zip
 
 %description
 Native Qt launcher for the GTA5RP roleplay project: account login, server list
-with online counters, news, and one-click start of RAGE:MP. The game runs
-through Steam's Proton in the GTA V prefix. Not affiliated with GTA5RP.
+with online counters, news, and one-click start of RAGE:MP. GTA V from Steam,
+Rockstar Games Launcher or Epic Games Store runs through Proton or Wine in its
+prefix. Not affiliated with GTA5RP.
 
 %prep
 %setup -q

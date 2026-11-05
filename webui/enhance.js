@@ -401,6 +401,14 @@
     const L = linux || { protons: [], checks: [], problems: [] };
     const win = L.platform === 'win';
     const opts = L.protons.map((p) => `<option value="${esc(p.path)}" ${p.path === L.proton ? 'selected' : ''}>${esc(p.name)}</option>`).join('');
+    const nonSteam = L.store_now === 'rgl' || L.store_now === 'egs';
+    const storeOpts = [{ id: 'auto', name: 'Автоматически', found: '' }, ...(L.stores || [])].map((s) =>
+      `<option value="${s.id}" ${s.id === (L.store || 'auto') ? 'selected' : ''}>${esc(s.name)}${
+        s.id === 'auto' ? '' : s.found ? ` — ${esc(s.found)}` : ' — не найдена'}</option>`).join('');
+    const launcherBtn = L.need_launcher === 'rgl'
+      ? '<button class="rp-btn primary" data-act="inst-rgl">Установить Rockstar Games Launcher</button>'
+      : L.need_launcher === 'egs'
+        ? '<button class="rp-btn primary" data-act="inst-egs">Установить Epic Games Launcher</button>' : '';
     drawer.innerHTML = `
       <div class="rp-veil"></div>
       <div class="rp-panel">
@@ -408,10 +416,15 @@
           <button class="rp-x" data-act="close" title="Закрыть (Esc)">✕</button></div>
 
         <div class="rp-sec"><h4>Запуск игры</h4>
-          ${win ? '' : `<div class="rp-row"><span>Proton<small>чем запускать RAGE:MP и GTA V</small></span>
+          ${win ? '' : `<div class="rp-row"><span>Версия GTA V<small>из какого магазина игра</small></span>
+            <select class="rp-select" data-k="store">${storeOpts}</select></div>
+          <div class="rp-row"><span>${nonSteam ? 'Proton / Wine' : 'Proton'}<small>чем запускать RAGE:MP и GTA V</small></span>
             <select class="rp-select" data-k="proton">${opts || '<option>не найден</option>'}</select></div>
           <div class="rp-row"><span>Папка GTA V</span><button class="rp-btn" data-act="gta">Выбрать…</button></div>
-          <div class="rp-path">${esc(L.gta_path || 'не найдена')}</div>`}
+          <div class="rp-path">${esc(L.gta_path || 'не найдена')}</div>
+          ${nonSteam ? `<div class="rp-row"><span>Wine-префикс<small>где стоит ${L.store_now === 'egs' ? 'Epic' : 'Rockstar'} Launcher</small></span>
+            <button class="rp-btn" data-act="prefix">Выбрать…</button></div>
+          <div class="rp-path">${esc(L.prefix || 'не найден')}</div>` : ''}`}
           <div class="rp-row"><span>Сворачивать после запуска<small>окно уйдёт в панель задач</small></span>${toggle('close_on_play', L.close_on_play)}</div>
           ${win ? '' : `<div class="rp-row"><span>Подробный лог Proton<small>для поиска проблем</small></span>${toggle('debug_log', L.debug_log)}</div>`}
         </div>
@@ -420,7 +433,9 @@
           <div class="rp-checks">${L.checks.map((c) => `<div class="rp-check${c.ok ? ' ok' : ''}"><b>${esc(c.name)}</b><em>${esc(c.hint)}</em></div>`).join('')}</div>
           ${L.problems.length ? `<div class="rp-warn">${L.problems.map(esc).join('<br>')}</div>` : ''}
           <div class="rp-actions">
-            ${win || (L.checks.find((c) => c.name === 'EasyAntiCheat Runtime') || {}).ok
+            ${launcherBtn}
+            ${L.can_open_egl ? '<button class="rp-btn" data-act="egl">Открыть Epic Games Launcher</button>' : ''}
+            ${win || nonSteam || (L.checks.find((c) => c.name === 'EasyAntiCheat Runtime') || {}).ok
               ? '<button class="rp-btn" data-act="refresh">Проверить снова</button>'
               : '<button class="rp-btn primary" data-act="eac">Установить античит</button>'}
             <button class="rp-btn" data-act="rage">Папка RAGE:MP</button>
@@ -486,6 +501,16 @@
     if (!act) return;
     if (act === 'close') return closeDrawer();
     if (act === 'gta') { const s = await bridge('pickGtaPath'); if (s) { linux = JSON.parse(s); renderDrawer(); } }
+    if (act === 'prefix') { const s = await bridge('pickPrefix'); if (s) { linux = JSON.parse(s); renderDrawer(); renderSys(); } }
+    if (act === 'inst-rgl' || act === 'inst-egs') {
+      bridge('installStoreLauncher', act.slice(5));
+      alert('Скачиваю установщик и запускаю его в префиксе игры — окно установки появится через минуту-две. '
+        + 'После установки нажмите «Проверить снова».'
+        + (act === 'inst-egs' ? '\n\nПотом откройте Epic Games Launcher, войдите в аккаунт и добавьте GTA V: '
+          + 'в Heroic — «Синхронизация с Epic Games Launcher» на этот префикс, или в самом Epic нажмите '
+          + '«Установить» и укажите папку игры — он проверит файлы и не будет качать заново.' : ''));
+    }
+    if (act === 'egl') bridge('openStoreLauncher');
     if (act === 'eac') bridge('installEac');
     if (act === 'refresh') { await loadLinux(); renderDrawer(); }
     if (act === 'rage') bridge('openRage');
